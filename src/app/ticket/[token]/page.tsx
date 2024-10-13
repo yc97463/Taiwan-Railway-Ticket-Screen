@@ -99,7 +99,7 @@ export default function TicketPage() {
             {copied ? 'check' : 'link'}
           </span>
           <span className="material-symbols-outlined">
-            sync
+            edit
           </span>
         </div>
       </div>
