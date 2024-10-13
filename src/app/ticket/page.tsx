@@ -41,8 +41,11 @@ export default function TicketScan() {
             stopScanner()
         }
 
-        const onScanFailure = (error: any) => {
+        const onScanFailure = (errorMessage: string) => {
             // Ignoring failures as they happen frequently
+            // But we can log them if needed
+            // console.error("QR Code scanning failed", errorMessage);
+            return errorMessage;
         }
 
         const html5QrcodeScanner = new Html5QrcodeScanner(
@@ -83,7 +86,7 @@ export default function TicketScan() {
         
         // Create search params without the token
         const { token, ...searchParams } = ticketInfo
-        const queryString = new URLSearchParams(searchParams as any).toString()
+        const queryString = new URLSearchParams(searchParams).toString()
         
         // Navigate to the ticket page with token in route and other info as search params
         router.push(`/ticket/${token}?${queryString}`)

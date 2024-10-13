@@ -1,18 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import QRCode from 'qrcode';
 
 const GenerateQRCode = ({ text, width = 200 }) => {
   const canvasRef = useRef(null);
 
-  useEffect(() => {
-    if (text && canvasRef.current) {
-      generateQRCode();
-    }
-  }, [text, width]); // Add width to dependencies
-
-  const generateQRCode = async () => {
+  const generateQRCode = useCallback(async () => {
     try {
       const canvas = canvasRef.current;
+      if (!canvas) return;
+      
       // Set canvas size
       canvas.width = width;
       canvas.height = width;
@@ -30,7 +26,13 @@ const GenerateQRCode = ({ text, width = 200 }) => {
     } catch (error) {
       console.error('Error generating QR code:', error);
     }
-  };
+  }, [text, width]);
+
+  useEffect(() => {
+    if (text && canvasRef.current) {
+      generateQRCode();
+    }
+  }, [text, width, generateQRCode]);
 
   return (
     <div className="flex justify-center items-center">

@@ -3,6 +3,14 @@
 import { useState, useEffect } from "react"
 import { useParams, useSearchParams, useRouter } from "next/navigation"
 import QRCodeGenerator from "../../components/QRCodeGenerator";
+import 'material-symbols';
+
+interface TicketData {
+  // Define the structure of your ticket data here
+  // For example:
+  id: string;
+  // Add other fields as necessary
+}
 
 export default function TicketPage() {
   const router = useRouter();
@@ -20,7 +28,7 @@ export default function TicketPage() {
   const arrival = searchParams.get("arrival")
   const seat = searchParams.get("seat")
 
-  const [data, setData] = useState(null)
+  const [data, setData] = useState<TicketData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -36,8 +44,8 @@ export default function TicketPage() {
         const res = await fetch(`https://api.dhsa.ndhu.edu.tw/card/membership/${token}`)
         const result = await res.json()
         setData(result)
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch data")
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch data")
       } finally {
         setLoading(false)
       }
@@ -62,7 +70,6 @@ export default function TicketPage() {
 
   const toggleQRCodeSize = () => {
     setQRCodeWidth(prevWidth => prevWidth === 200 ? 250 : 200);
-    // console.log('QR Code width toggled to:', qrCodeWidth === 200 ? 300 : 200); // Debug log
   }
 
   if (loading) return <div className="max-w-3xl mx-auto p-4">Loading...</div>
