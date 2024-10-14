@@ -78,7 +78,7 @@ export default function TicketPage() {
 
   return (
     <div className="max-w-[400px] mx-auto bg-white h-screen flex flex-col">
-      <div className="flex justify-between items-center bg-tr-blue p-4">
+      <div className="flex justify-between items-center bg-tr-blue p-4 text-white">
         <div className="flex items-center gap-2">
           <span
             className="material-symbols-outlined cursor-pointer"
@@ -86,7 +86,7 @@ export default function TicketPage() {
           >
             arrow_back_ios
           </span>
-          <h1 className="text-2xl font-bold">乘車條碼</h1>
+          <h1 className="text-xl font-bold">乘車條碼</h1>
         </div>
         <div className="flex items-center gap-3">
           <span className="material-symbols-outlined">
