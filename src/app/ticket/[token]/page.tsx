@@ -81,7 +81,7 @@ export default function TicketPage() {
     if (!date || !departure || !arrival) return null;
 
     const departureDate = new Date(`${date} ${departure}`);
-    let startDate = new Date(departureDate);
+    const startDate = new Date(departureDate);
 
     // Calculate minutes to subtract (10 to 15 minutes)
     let minutesToSubtract = 10;
