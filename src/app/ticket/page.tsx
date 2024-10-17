@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Html5QrcodeScanner } from 'html5-qrcode'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 interface TicketInfo {
     date: string;
@@ -31,6 +31,32 @@ export default function TicketScan() {
     })
     const scannerRef = useRef<Html5QrcodeScanner | null>(null)
     const router = useRouter()
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        // Populate form fields from URL parameters
+        const date = searchParams.get('date') || ''
+        const nbr = searchParams.get('nbr') || ''
+        const type = searchParams.get('type') || ''
+        const from = searchParams.get('from') || ''
+        const to = searchParams.get('to') || ''
+        const departure = searchParams.get('departure') || ''
+        const arrival = searchParams.get('arrival') || ''
+        const seat = searchParams.get('seat') || ''
+        const token = searchParams.get('token') || ''
+
+        setTicketInfo({
+            date,
+            nbr,
+            type,
+            from,
+            to,
+            departure,
+            arrival,
+            seat,
+            token
+        })
+    }, [searchParams])
 
     useEffect(() => {
         if (!isScanning) return
@@ -43,8 +69,6 @@ export default function TicketScan() {
 
         const onScanFailure = (errorMessage: string) => {
             // Ignoring failures as they happen frequently
-            // But we can log them if needed
-            // console.error("QR Code scanning failed", errorMessage);
             return errorMessage;
         }
 
@@ -163,7 +187,7 @@ export default function TicketScan() {
                     </div>
                 )}
                 <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Submit Ticket Information
+                    {ticketInfo.token ? 'Update Ticket Information' : 'Submit Ticket Information'}
                 </button>
             </form>
         </div>

@@ -115,6 +115,21 @@ export default function TicketPage() {
     }
   }
 
+  const handleEditClick = () => {
+    const queryParams = new URLSearchParams({
+      date: date || '',
+      nbr: nbr || '',
+      type: type || '',
+      from: from || '',
+      to: to || '',
+      departure: departure || '',
+      arrival: arrival || '',
+      seat: seat || '',
+      token: token
+    }).toString();
+    router.push(`/ticket?${queryParams}`);
+  }
+
   if (loading) return <div className="max-w-3xl mx-auto p-4">Loading...</div>
   if (error) return <div className="max-w-3xl mx-auto p-4">Error: {error}</div>
   if (!data) return <div className="max-w-3xl mx-auto p-4">No data found</div>
@@ -144,7 +159,7 @@ export default function TicketPage() {
           >
             {copied ? 'check' : 'link'}
           </span>
-          <span className="material-symbols-outlined">
+          <span className="material-symbols-outlined cursor-pointer" onClick={handleEditClick}>
             edit
           </span>
         </div>
