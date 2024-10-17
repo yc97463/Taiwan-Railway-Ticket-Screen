@@ -31,6 +31,13 @@ export default function TicketPage() {
   const [copied, setCopied] = useState(false)
   const [qrCodeWidth, setQRCodeWidth] = useState(200)
 
+  // Format seat for display
+  const formatSeat = (seatString: string | null): string => {
+    if (!seatString) return '';
+    const [carriage, seatNumber] = seatString.split(' ');
+    return `${carriage} 車 ${seatNumber.padStart(2, '0')} 號`;
+  }
+
   useEffect(() => {
     if (!token) {
       return
@@ -101,7 +108,7 @@ export default function TicketPage() {
     const event = {
       action: 'TEMPLATE',
       text: `🚃 ${type} ${nbr} ${from}${to}`,
-      details: `座位： ${seat}\n開車時間： ${departure}\n抵達時間： ${arrival}\n\n🎟️ ${window.location.href}`,
+      details: `座位： ${formatSeat(seat)}\n開車時間： ${departure}\n抵達時間： ${arrival}\n\n🎟️ ${window.location.href}`,
       dates: `${startDate.toISOString().replace(/-|:|\.\d\d\d/g, '')}/${endDate.toISOString().replace(/-|:|\.\d\d\d/g, '')}`,
     };
 
@@ -168,7 +175,7 @@ export default function TicketPage() {
         <div className="p-4 my-4">
           <p><span className="text-tr-orange">{type}({nbr})</span> {date}</p>
           <p>{from} {departure} - {to} {arrival}</p>
-          <p>座位: {seat}</p>
+          <p>座位: {formatSeat(seat)}</p>
         </div>
         <div className="p-4 m-4 bg-gray-100 rounded-lg">
           <p className="text-tr-blue text-center my-2">限當日當次車有效</p>

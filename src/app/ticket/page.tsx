@@ -157,8 +157,8 @@ export default function TicketScan() {
                         value={ticketInfo.seat} 
                         onChange={handleInputChange} 
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
-                        pattern="\d+\s車\s\d+\s號"
-                        placeholder="例：1 車 05 號"
+                        pattern="\d+\s\d"
+                        placeholder="例：1 車 05 號，請輸入 1 05"
                         required 
                     />
                 </div>
