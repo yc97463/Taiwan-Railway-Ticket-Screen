@@ -189,6 +189,24 @@ export default function TicketScan() {
                 <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     {ticketInfo.token ? 'Update Ticket Information' : 'Submit Ticket Information'}
                 </button>
+
+                <button 
+                    type="button"
+                    onClick={() => setTicketInfo({
+                        date: '',
+                        nbr: '',
+                        type: '',
+                        from: '',
+                        to: '',
+                        departure: '',
+                        arrival: '',
+                        seat: '',
+                        token: ''
+                    })}
+                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Clear Form
+                </button>
             </form>
         </div>
     )
