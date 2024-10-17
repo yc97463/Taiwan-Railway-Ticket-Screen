@@ -6,8 +6,6 @@ import QRCodeGenerator from "../../components/QRCodeGenerator";
 import 'material-symbols';
 
 interface TicketData {
-  // Define the structure of your ticket data here
-  // For example:
   id: string;
   // Add other fields as necessary
 }
@@ -17,7 +15,6 @@ export default function TicketPage() {
   const params = useParams()
   const token = params.token as string
 
-  // Train information from query params
   const searchParams = useSearchParams()
   const date = searchParams.get("date")
   const nbr = searchParams.get("nbr")
@@ -41,9 +38,10 @@ export default function TicketPage() {
 
     const fetchData = async () => {
       try {
-        const res = await fetch(`https://api.dhsa.ndhu.edu.tw/card/membership/${token}`)
-        const result = await res.json()
-        setData(result)
+        // const res = await fetch(`https://api.dhsa.ndhu.edu.tw/card/membership/${token}`)
+        // const result = await res.json()
+        // setData(result)
+        setData({ id: token })
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch data")
       } finally {
@@ -72,6 +70,51 @@ export default function TicketPage() {
     setQRCodeWidth(prevWidth => prevWidth === 200 ? 250 : 200);
   }
 
+  const getGoogleCalendarUrl = () => {
+    if (!date || !departure || !arrival) return null;
+
+    const departureDate = new Date(`${date} ${departure}`);
+    let startDate = new Date(departureDate);
+
+    // Calculate minutes to subtract (10 to 15 minutes)
+    let minutesToSubtract = 10;
+    let currentMinutes = startDate.getMinutes();
+
+    // Adjust minutes to end with 0 or 5
+    while ((currentMinutes - minutesToSubtract) % 5 !== 0 && minutesToSubtract < 15) {
+      minutesToSubtract++;
+    }
+
+    // If we couldn't find a suitable time in 15 minutes, default to 10 minutes before
+    if (minutesToSubtract >= 15) {
+      minutesToSubtract = 10;
+      currentMinutes = Math.floor(currentMinutes / 5) * 5;
+    } else {
+      currentMinutes -= minutesToSubtract;
+    }
+
+    startDate.setMinutes(currentMinutes);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+
+    const endDate = new Date(`${date} ${arrival}`);
+    const event = {
+      action: 'TEMPLATE',
+      text: `🚃 ${type} ${nbr} ${from}${to}`,
+      details: `座位： ${seat}\n開車時間： ${departure}\n抵達時間： ${arrival}\n\n🎟️ ${window.location.href}`,
+      dates: `${startDate.toISOString().replace(/-|:|\.\d\d\d/g, '')}/${endDate.toISOString().replace(/-|:|\.\d\d\d/g, '')}`,
+    };
+
+    return `https://www.google.com/calendar/render?${new URLSearchParams(event).toString()}`;
+  }
+
+  const handleAddToCalendar = () => {
+    const url = getGoogleCalendarUrl();
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
+
   if (loading) return <div className="max-w-3xl mx-auto p-4">Loading...</div>
   if (error) return <div className="max-w-3xl mx-auto p-4">Error: {error}</div>
   if (!data) return <div className="max-w-3xl mx-auto p-4">No data found</div>
@@ -89,7 +132,10 @@ export default function TicketPage() {
           <h1 className="text-xl font-bold">乘車條碼</h1>
         </div>
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined">
+          <span
+            className="material-symbols-outlined cursor-pointer"
+            onClick={handleAddToCalendar}
+          >
             calendar_add_on
           </span>
           <span
@@ -105,9 +151,6 @@ export default function TicketPage() {
       </div>
       <div className="flex-1 overflow-auto text-black">
         <div className="p-4 my-4">
-          {/* <p><span className="text-tr-orange">自強(3000)</span> 283 2024/05/03 </p>
-          <p>志學 17:34 - 臺北 20:12</p> */}
-
           <p><span className="text-tr-orange">{type}({nbr})</span> {date}</p>
           <p>{from} {departure} - {to} {arrival}</p>
           <p>座位: {seat}</p>
@@ -120,7 +163,6 @@ export default function TicketPage() {
           >
             <QRCodeGenerator text={token} width={qrCodeWidth} />
           </div>
-          {/* <p className="text-center text-sm mt-2">Current QR Code width: {qrCodeWidth}px</p> */}
         </div>
         <div className="bg-tr-yellow p-4">
           行程資訊
