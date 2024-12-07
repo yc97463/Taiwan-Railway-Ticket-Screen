@@ -103,7 +103,7 @@ export default function TicketScanForm() {
         setIsScanning(false)
     }
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
         setTicketInfo(prev => ({ ...prev, [name]: value }))
     }
@@ -134,7 +134,25 @@ export default function TicketScanForm() {
                 </div>
                 <div>
                     <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type</label>
-                    <input type="text" id="type" name="type" value={ticketInfo.type} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
+                    <select
+                        id="type"
+                        name="type"
+                        value={ticketInfo.type}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        required
+                    >
+                        <option value="">Select a type</option>
+                        <option value="區間">區間</option>
+                        <option value="區間快">區間快</option>
+                        <option value="莒光">莒光</option>
+                        <option value="自強3000">自強3000</option>
+                        <option value="自強">自強</option>
+                        <option value="普悠瑪">普悠瑪</option>
+                        <option value="太魯閣">太魯閣</option>
+                        <option value="觀光列車">觀光列車</option>
+                        <option value="其他">其他</option>
+                    </select>
                 </div>
                 <div>
                     <label htmlFor="from" className="block text-sm font-medium text-gray-700">From</label>
