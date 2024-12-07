@@ -17,6 +17,7 @@ export default function TicketPage() {
 
   const searchParams = useSearchParams()
   const date = searchParams.get("date")
+  const formated = date ? date.replace(/-/g, '/') : '';
   const nbr = searchParams.get("nbr")
   const type = searchParams.get("type")
   const from = searchParams.get("from")
@@ -188,6 +189,17 @@ export default function TicketPage() {
         </div>
         <div className="bg-tr-yellow p-4">
           行程資訊
+        </div>
+        
+        <div className="p-4">
+          <a
+            href={`https://www.railway.gov.tw/tra-tip-web/tip/tip001/tip112/querybytrainno?rideDate=${formated}&trainNo=${nbr}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full bg-tr-blue text-white py-3 px-4 rounded-lg text-center hover:bg-blue-700 transition-colors duration-200"
+          >
+            🚃 查看即時動態
+          </a>
         </div>
         <div className="p-4">
           這裡放起訖站和誤點資訊
