@@ -33,6 +33,7 @@ export default function TicketScanForm() {
     const scannerRef = useRef<Html5QrcodeScanner | null>(null)
     const router = useRouter()
     const searchParams = useSearchParams()
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         // Populate form fields from URL parameters
@@ -46,6 +47,7 @@ export default function TicketScanForm() {
         const seat = searchParams.get('seat') || ''
         const token = searchParams.get('token') || ''
 
+        const tokenFromUrl = searchParams.get('token') || '';
         setTicketInfo({
             date,
             nbr,
@@ -55,18 +57,19 @@ export default function TicketScanForm() {
             departure,
             arrival,
             seat,
-            token
-        })
+            token: tokenFromUrl,
+        });
+        setIsEditing(!!tokenFromUrl); // 有 token 時表示是編輯
     }, [searchParams])
 
     useEffect(() => {
         if (!isScanning) return
 
         const onScanSuccess = (decodedText: string) => {
-            console.log(`QR Code scanned: ${decodedText}`)
-            setTicketInfo(prev => ({ ...prev, token: decodedText }))
-            stopScanner()
-        }
+            setTicketInfo(prev => ({ ...prev, token: decodedText }));
+            setIsEditing(true); // 掃描新 token 時也進入編輯模式
+            stopScanner();
+        };
 
         const onScanFailure = (errorMessage: string) => {
             // Ignoring failures as they happen frequently
@@ -108,11 +111,11 @@ export default function TicketScanForm() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         console.log('Submitted ticket info:', ticketInfo)
-        
+
         // Create search params without the token
         const { token, ...searchParams } = ticketInfo
         const queryString = new URLSearchParams(searchParams).toString()
-        
+
         // Navigate to the ticket page with token in route and other info as search params
         router.push(`/ticket/${token}?${queryString}`)
     }
@@ -151,16 +154,16 @@ export default function TicketScanForm() {
                 </div>
                 <div>
                     <label htmlFor="seat" className="block text-sm font-medium text-gray-700">Seat (N 車 NN 號)</label>
-                    <input 
-                        type="text" 
-                        id="seat" 
-                        name="seat" 
-                        value={ticketInfo.seat} 
-                        onChange={handleInputChange} 
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
+                    <input
+                        type="text"
+                        id="seat"
+                        name="seat"
+                        value={ticketInfo.seat}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                         pattern="\d+\s\d+"
                         placeholder="例：1 車 05 號，請輸入 1 05"
-                        required 
+                        required
                     />
                 </div>
                 <div>
@@ -168,7 +171,7 @@ export default function TicketScanForm() {
                     <input type="text" id="token" name="token" value={ticketInfo.token} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" readOnly />
                 </div>
                 {!isScanning ? (
-                    <button 
+                    <button
                         type="button"
                         onClick={startScanner}
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -178,7 +181,7 @@ export default function TicketScanForm() {
                 ) : (
                     <div>
                         <div id="reader" className="mb-4"></div>
-                        <button 
+                        <button
                             type="button"
                             onClick={stopScanner}
                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -188,10 +191,10 @@ export default function TicketScanForm() {
                     </div>
                 )}
                 <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    {ticketInfo.token ? 'Update Ticket Information' : 'Submit Ticket Information'}
+                    {isEditing ? 'Update Ticket Information' : 'Submit Ticket Information'}
                 </button>
 
-                <button 
+                <button
                     type="button"
                     onClick={() => setTicketInfo({
                         date: '',
