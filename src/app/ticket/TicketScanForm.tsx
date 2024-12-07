@@ -45,7 +45,6 @@ export default function TicketScanForm() {
         const departure = searchParams.get('departure') || ''
         const arrival = searchParams.get('arrival') || ''
         const seat = searchParams.get('seat') || ''
-        const token = searchParams.get('token') || ''
 
         const tokenFromUrl = searchParams.get('token') || '';
         setTicketInfo({
