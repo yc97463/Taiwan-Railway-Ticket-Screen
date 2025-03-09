@@ -1,9 +1,20 @@
-// app/ticket/TicketScanForm.tsx
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 import { useRouter, useSearchParams } from 'next/navigation'
+import {
+    ScanLine,
+    Calendar,
+    Train,
+    Clock,
+    MapPin,
+    Armchair,
+    Plus,
+    X,
+    Save,
+    RotateCcw
+} from 'lucide-react'
 
 interface TicketInfo {
     date: string;
@@ -120,115 +131,186 @@ export default function TicketScanForm() {
     }
 
     return (
-        <div className="container mx-auto p-4 bg-white text-black">
-            <h1 className="text-2xl font-bold mb-4">Ticket Information</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
-                    <input type="date" id="date" name="date" value={ticketInfo.date} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                    <label htmlFor="nbr" className="block text-sm font-medium text-gray-700">Number</label>
-                    <input type="text" id="nbr" name="nbr" value={ticketInfo.nbr} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                    <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type</label>
-                    <select
-                        id="type"
-                        name="type"
-                        value={ticketInfo.type}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        required
-                    >
-                        <option value="">Select a type</option>
-                        <option value="區間">區間</option>
-                        <option value="區間快">區間快</option>
-                        <option value="莒光">莒光</option>
-                        <option value="自強3000">自強3000</option>
-                        <option value="自強">自強</option>
-                        <option value="普悠瑪">普悠瑪</option>
-                        <option value="太魯閣">太魯閣</option>
-                        <option value="觀光列車">觀光列車</option>
-                        <option value="其他">其他</option>
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="from" className="block text-sm font-medium text-gray-700">From</label>
-                    <input type="text" id="from" name="from" value={ticketInfo.from} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                    <label htmlFor="to" className="block text-sm font-medium text-gray-700">To</label>
-                    <input type="text" id="to" name="to" value={ticketInfo.to} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                    <label htmlFor="departure" className="block text-sm font-medium text-gray-700">Departure Time</label>
-                    <input type="time" id="departure" name="departure" value={ticketInfo.departure} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                    <label htmlFor="arrival" className="block text-sm font-medium text-gray-700">Arrival Time</label>
-                    <input type="time" id="arrival" name="arrival" value={ticketInfo.arrival} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                    <label htmlFor="seat" className="block text-sm font-medium text-gray-700">Seat (N 車 NN 號)</label>
-                    <input
-                        type="text"
-                        id="seat"
-                        name="seat"
-                        value={ticketInfo.seat}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                        pattern="\d+\s\d+"
-                        placeholder="例：1 車 05 號，請輸入 1 05"
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="token" className="block text-sm font-medium text-gray-700">Token (Scan QR Code)</label>
-                    <input type="text" id="token" name="token" value={ticketInfo.token} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" readOnly />
-                </div>
-                {!isScanning ? (
-                    <button
-                        type="button"
-                        onClick={startScanner}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Scan QR Code
-                    </button>
-                ) : (
-                    <div>
-                        <div id="reader" className="mb-4"></div>
-                        <button
-                            type="button"
-                            onClick={stopScanner}
-                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                        >
-                            Stop Scanning
+        <div className="max-w-2xl mx-auto p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <Train className="w-6 h-6 text-tr-blue" />
+                    {isEditing ? '編輯車票資訊' : '新增車票資訊'}
+                </h1>
+
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* 掃描區域 */}
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                            <span className="w-1 h-6 bg-tr-blue rounded-full"></span>
+                            條碼掃描
+                        </h2>
+                        <div className="bg-gray-50 rounded-xl p-4">
+                            {!isScanning ? (
+                                <button
+                                    type="button"
+                                    onClick={startScanner}
+                                    className="w-full py-4 px-6 rounded-xl border-2 border-dashed border-gray-300 
+                                             hover:border-tr-blue hover:bg-tr-blue/5 transition-colors duration-200
+                                             flex items-center justify-center gap-3 text-gray-600 hover:text-tr-blue"
+                                >
+                                    <ScanLine className="w-6 h-6" />
+                                    點擊開始掃描 QR Code
+                                </button>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div id="reader" className="overflow-hidden rounded-lg"></div>
+                                    <button
+                                        type="button"
+                                        onClick={stopScanner}
+                                        className="w-full py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 
+                                                 text-white transition-colors duration-200 flex items-center justify-center gap-2"
+                                    >
+                                        <X className="w-5 h-5" />
+                                        停止掃描
+                                    </button>
+                                </div>
+                            )}
+                            <input type="text" id="token" name="token" value={ticketInfo.token}
+                                className="sr-only" readOnly />
+                        </div>
+                    </div>
+
+                    {/* 基本資訊 */}
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                            <span className="w-1 h-6 bg-tr-orange rounded-full"></span>
+                            基本資訊
+                        </h2>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    日期
+                                </label>
+                                <input type="date" name="date" value={ticketInfo.date}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <Train className="w-4 h-4" />
+                                    車種
+                                </label>
+                                <select name="type" value={ticketInfo.type}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                 focus:ring-2 focus:ring-tr-blue focus:border-transparent">
+                                    <option value="">選擇車種</option>
+                                    <option value="自強3000">自強3000</option>
+                                    <option value="區間">區間車</option>
+                                    <option value="區間快">區間快</option>
+                                    <option value="莒光">莒光號</option>
+                                    <option value="自強">舊自強號</option>
+                                    <option value="普悠瑪">普悠瑪</option>
+                                    <option value="太魯閣">太魯閣</option>
+                                    <option value="復興">復興號</option>
+
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <Plus className="w-4 h-4" />
+                                    車次
+                                </label>
+                                <input type="text" name="nbr" value={ticketInfo.nbr}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <Armchair className="w-4 h-4" />
+                                    座位
+                                </label>
+                                <input type="text" name="seat" value={ticketInfo.seat}
+                                    onChange={handleInputChange}
+                                    placeholder="1 05"
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 行程資訊 */}
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                            <span className="w-1 h-6 bg-tr-yellow rounded-full"></span>
+                            行程資訊
+                        </h2>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <MapPin className="w-4 h-4" />
+                                    起站
+                                </label>
+                                <input type="text" name="from" value={ticketInfo.from}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <MapPin className="w-4 h-4" />
+                                    迄站
+                                </label>
+                                <input type="text" name="to" value={ticketInfo.to}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <Clock className="w-4 h-4" />
+                                    出發時間
+                                </label>
+                                <input type="time" name="departure" value={ticketInfo.departure}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
+                                    <Clock className="w-4 h-4" />
+                                    抵達時間
+                                </label>
+                                <input type="time" name="arrival" value={ticketInfo.arrival}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 按鈕群組 */}
+                    <div className="flex gap-4 pt-4">
+                        <button type="submit"
+                            className="flex-1 bg-tr-blue text-white py-3 px-6 rounded-xl
+                                         hover:bg-blue-600 transition-colors duration-200 font-medium
+                                         flex items-center justify-center gap-2">
+                            <Save className="w-5 h-5" />
+                            {isEditing ? '更新車票資訊' : '建立車票'}
+                        </button>
+                        <button type="button"
+                            onClick={() => setTicketInfo({
+                                date: '', nbr: '', type: '', from: '', to: '',
+                                departure: '', arrival: '', seat: '', token: ''
+                            })}
+                            className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600
+                                     hover:bg-gray-50 transition-colors duration-200
+                                     flex items-center justify-center gap-2">
+                            <RotateCcw className="w-5 h-5" />
+                            清除表單
                         </button>
                     </div>
-                )}
-                <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    {isEditing ? 'Update Ticket Information' : 'Submit Ticket Information'}
-                </button>
-
-                <button
-                    type="button"
-                    onClick={() => setTicketInfo({
-                        date: '',
-                        nbr: '',
-                        type: '',
-                        from: '',
-                        to: '',
-                        departure: '',
-                        arrival: '',
-                        seat: '',
-                        token: ''
-                    })}
-                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    Clear Form
-                </button>
-            </form>
-        </div>
+                </form>
+            </div>
+        </div >
     )
 }
