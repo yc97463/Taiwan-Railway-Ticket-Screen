@@ -1,9 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useParams, useSearchParams, useRouter } from "next/navigation"
-import QRCodeGenerator from "../../components/QRCodeGenerator";
-import 'material-symbols';
+import { useState, useEffect } from "react"
+import QRCodeGenerator from "../../components/QRCodeGenerator"
+import {
+  ArrowLeft,
+  CalendarPlus,
+  Link,
+  Check,
+  Edit,
+  Calendar,
+  ArrowRight,
+  Train,
+  Info,
+  Armchair
+} from "lucide-react"
 
 interface TicketData {
   id: string;
@@ -146,63 +157,102 @@ export default function TicketPage() {
     <div className="max-w-[400px] mx-auto bg-white h-screen flex flex-col">
       <div className="flex justify-between items-center bg-tr-blue p-4 text-white">
         <div className="flex items-center gap-2">
-          <span
-            className="material-symbols-outlined cursor-pointer"
+          <ArrowLeft
+            className="cursor-pointer w-5 h-5"
             onClick={handleBackClick}
-          >
-            arrow_back_ios
-          </span>
+          />
           <h1 className="text-xl font-bold">乘車條碼</h1>
         </div>
         <div className="flex items-center gap-3">
-          <span
-            className="material-symbols-outlined cursor-pointer"
+          <CalendarPlus
+            className="cursor-pointer w-5 h-5"
             onClick={handleAddToCalendar}
-          >
-            calendar_add_on
-          </span>
-          <span
-            className="material-symbols-outlined cursor-pointer"
-            onClick={handleCopyLink}
-          >
-            {copied ? 'check' : 'link'}
-          </span>
-          <span className="material-symbols-outlined cursor-pointer" onClick={handleEditClick}>
-            edit
-          </span>
+          />
+          {copied ? (
+            <Check className="cursor-pointer w-5 h-5" />
+          ) : (
+            <Link
+              className="cursor-pointer w-5 h-5"
+              onClick={handleCopyLink}
+            />
+          )}
+          <Edit
+            className="cursor-pointer w-5 h-5"
+            onClick={handleEditClick}
+          />
         </div>
       </div>
       <div className="flex-1 overflow-auto text-black">
-        <div className="p-4 my-4">
-          <p><span className="text-tr-orange">{type}({nbr})</span> {date}</p>
-          <p>{from} {departure} - {to} {arrival}</p>
-          <p>座位: {formatSeat(seat)}</p>
-        </div>
-        <div className="p-4 m-4 bg-gray-100 rounded-lg">
-          <p className="text-tr-blue text-center my-2">限當日當次車有效</p>
-          <div
-            onClick={toggleQRCodeSize}
-            className="cursor-pointer transition-all duration-300 ease-in-out"
-          >
-            <QRCodeGenerator text={token} width={qrCodeWidth} />
+        <div className="p-6 space-y-6">
+          {/* 車票基本資訊卡片 */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Train className="w-5 h-5 text-tr-orange" />
+                <span className="text-tr-orange font-medium text-lg">{type}</span>
+                <span className="text-gray-600">#{nbr}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <Calendar className="w-4 h-4 text-gray-400" />
+                <span>{date}</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <div className="text-center">
+                  <p className="text-gray-500 text-sm">出發</p>
+                  <p className="font-medium text-lg">{from}</p>
+                  <p className="text-tr-blue font-medium">{departure}</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <div className="text-center">
+                  <p className="text-gray-500 text-sm">抵達</p>
+                  <p className="font-medium text-lg">{to}</p>
+                  <p className="text-tr-blue font-medium">{arrival}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                <Armchair className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-600">座位：{formatSeat(seat)}</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="bg-tr-yellow p-4">
-          行程資訊
-        </div>
-        
-        <div className="p-4">
-          <a
-            href={`https://www.railway.gov.tw/tra-tip-web/tip/tip001/tip112/querybytrainno?rideDate=${formated}&trainNo=${nbr}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full bg-tr-blue text-white py-3 px-4 rounded-lg text-center hover:bg-blue-700 transition-colors duration-200"
-          >
-            🚃 查看即時動態
-          </a>
-        </div>
-        <div className="p-4">
-          這裡放起訖站和誤點資訊
+
+          {/* QR Code 區域 */}
+          <div className="bg-gray-50 rounded-xl p-6">
+            <div className="text-center space-y-4">
+              <p className="text-tr-blue font-medium bg-tr-blue/10 py-2 px-4 rounded-full inline-block">
+                限當日當次車有效
+              </p>
+              <div
+                onClick={toggleQRCodeSize}
+                className="cursor-pointer transition-all duration-300 ease-in-out bg-white p-4 rounded-lg inline-block shadow-sm"
+              >
+                <QRCodeGenerator text={token} width={qrCodeWidth} />
+              </div>
+              <p className="text-gray-500 text-sm">點擊可放大/縮小 QR Code</p>
+            </div>
+          </div>
+
+          {/* 行程資訊標題 */}
+          <div className="bg-tr-yellow/10 border-l-4 border-tr-yellow p-4 rounded-r-lg">
+            <div className="flex items-center gap-2">
+              <Info className="w-5 h-5 text-tr-yellow" />
+              <span className="font-medium text-gray-700">行程資訊</span>
+            </div>
+          </div>
+
+          <div className="p-4">
+            <a
+              href={`https://www.railway.gov.tw/tra-tip-web/tip/tip001/tip112/querybytrainno?rideDate=${formated}&trainNo=${nbr}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full bg-tr-blue text-white py-3 px-4 rounded-lg text-center hover:bg-blue-700 transition-colors duration-200"
+            >
+              🚃 查看即時動態
+            </a>
+          </div>
+          <div className="p-4">
+            這裡放起訖站和誤點資訊
+          </div>
         </div>
       </div>
     </div>
