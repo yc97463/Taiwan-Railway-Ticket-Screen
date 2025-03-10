@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { Train } from 'lucide-react'
 
 // Dynamically import the form component with no SSR
-const TicketScanForm = dynamic(() => import('./TicketScanForm'), {
+const TicketScanForm = dynamic(() => import('@/components/TicketScanForm'), {
   ssr: false,
   loading: () => <FormSkeleton />
 })
@@ -24,7 +24,7 @@ function FormSkeleton() {
           <div className="w-full py-16 rounded-xl border-2 border-dashed border-gray-300"></div>
         </div>
       </div>
-      
+
       {/* Basic info skeleton */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
@@ -37,7 +37,7 @@ function FormSkeleton() {
           ))}
         </div>
       </div>
-      
+
       {/* Trip info skeleton */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
@@ -50,7 +50,7 @@ function FormSkeleton() {
           ))}
         </div>
       </div>
-      
+
       {/* Button skeleton */}
       <div className="flex gap-4 pt-4">
         <div className="flex-1 h-12 bg-gray-200 rounded-xl"></div>
@@ -68,7 +68,7 @@ export default function TicketPage() {
           <Train className="w-6 h-6 text-tr-blue" />
           車票資訊
         </h1>
-        
+
         <Suspense fallback={<FormSkeleton />}>
           <TicketScanForm />
         </Suspense>

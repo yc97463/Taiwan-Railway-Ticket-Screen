@@ -2,7 +2,7 @@
 
 import { useParams, useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import QRCodeGenerator from "../../components/QRCodeGenerator"
+import QRCodeGenerator from "../@/components/QRCodeGenerator"
 import {
   ArrowLeft,
   CalendarPlus,
