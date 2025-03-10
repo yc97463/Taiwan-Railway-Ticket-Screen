@@ -13,8 +13,7 @@ import {
   ArrowRight,
   Train,
   Info,
-  Armchair,
-  Loader2
+  Armchair
 } from "lucide-react"
 
 interface TicketData {
@@ -59,13 +58,10 @@ export default function TicketPage() {
 
     const fetchTicketData = async () => {
       try {
-        // const res = await fetch(`https://api.dhsa.ndhu.edu.tw/card/membership/${token}`)
-        // const result = await res.json()
-        // setData(result)
-        // Simulate API call
         setTimeout(() => {
           setData({ id: token });
           setTicketDataLoading(false);
+          console.log(data);
         }, 800);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch data")
@@ -80,6 +76,7 @@ export default function TicketPage() {
           setStatusDataLoading(false);
         }, 1500);
       } catch (err) {
+        console.log(err);
         setStatusDataLoading(false);
       }
     }
