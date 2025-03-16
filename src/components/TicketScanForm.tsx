@@ -13,8 +13,11 @@ import {
     Plus,
     X,
     Save,
-    RotateCcw
+    RotateCcw,
+    Check,
+    QrCode
 } from 'lucide-react'
+import { motion } from 'motion/react'
 
 interface TicketInfo {
     date: string;
@@ -139,17 +142,56 @@ export default function TicketScanForm() {
                     條碼掃描
                 </h2>
                 <div className="bg-gray-50 rounded-xl p-4">
-                    {!isScanning ? (
-                        <button
-                            type="button"
-                            onClick={startScanner}
-                            className="w-full py-4 px-6 rounded-xl border-2 border-dashed border-gray-300 
-                                     hover:border-tr-blue hover:bg-tr-blue/5 transition-colors duration-200
-                                     flex items-center justify-center gap-3 text-gray-600 hover:text-tr-blue"
+                    {ticketInfo.token && !isScanning ? (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-4 p-4 bg-tr-blue/10 border border-tr-blue/20 rounded-lg"
                         >
-                            <ScanLine className="w-6 h-6" />
-                            點擊開始掃描 QR Code
-                        </button>
+                            <div className="flex items-center gap-3 mb-2 text-tr-blue">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                                >
+                                    <Check className="w-6 h-6 p-1 bg-tr-blue text-white rounded-full" />
+                                </motion.div>
+                                <div className="font-medium">已掃描條碼</div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <QrCode className="w-5 h-5 text-tr-blue/70" />
+                                    <code className="bg-white px-3 py-1.5 rounded border border-tr-blue/20 text-gray-700 font-mono">
+                                        {ticketInfo.token.length > 24
+                                            ? ticketInfo.token.substring(0, 24) + '...'
+                                            : ticketInfo.token}
+                                    </code>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={startScanner}
+                                    className="text-sm px-3 py-1 bg-tr-blue text-white rounded hover:bg-blue-600 transition-colors flex items-center gap-1"
+                                >
+                                    <ScanLine className="w-4 h-4" />
+                                    重新掃描
+                                </button>
+                            </div>
+                        </motion.div>
+                    ) : null}
+
+                    {!isScanning ? (
+                        !ticketInfo.token && (
+                            <button
+                                type="button"
+                                onClick={startScanner}
+                                className="w-full py-4 px-6 rounded-xl border-2 border-dashed border-gray-300 
+                                        hover:border-tr-blue hover:bg-tr-blue/5 transition-colors duration-200
+                                        flex items-center justify-center gap-3 text-gray-600 hover:text-tr-blue"
+                            >
+                                <ScanLine className="w-6 h-6" />
+                                點擊開始掃描 QR Code
+                            </button>
+                        )
                     ) : (
                         <div className="space-y-4">
                             <div id="reader" className="overflow-hidden rounded-lg"></div>
@@ -157,7 +199,7 @@ export default function TicketScanForm() {
                                 type="button"
                                 onClick={stopScanner}
                                 className="w-full py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 
-                                         text-white transition-colors duration-200 flex items-center justify-center gap-2"
+                                        text-white transition-colors duration-200 flex items-center justify-center gap-2"
                             >
                                 <X className="w-5 h-5" />
                                 停止掃描
