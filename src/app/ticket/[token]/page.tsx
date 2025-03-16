@@ -15,6 +15,7 @@ import {
   Info,
   Armchair
 } from "lucide-react"
+import { motion } from "framer-motion"
 
 interface TicketData {
   id: string;
@@ -220,42 +221,82 @@ export default function TicketPage() {
 
   if (error) return <div className="max-w-3xl mx-auto p-4">Error: {error}</div>
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  }
+
   return (
-    <div className="max-w-[400px] mx-auto bg-white h-screen flex flex-col">
-      <div className="flex justify-between items-center bg-tr-blue p-4 text-white">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="max-w-[400px] mx-auto bg-white h-screen flex flex-col"
+    >
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="flex justify-between items-center bg-tr-blue p-4 text-white"
+      >
         <div className="flex items-center gap-2">
-          <ArrowLeft
-            className="cursor-pointer w-5 h-5"
-            onClick={handleBackClick}
-          />
+          <motion.div whileHover={{ x: -3 }} whileTap={{ scale: 0.9 }}>
+            <ArrowLeft
+              className="cursor-pointer w-5 h-5"
+              onClick={handleBackClick}
+            />
+          </motion.div>
           <h1 className="text-xl font-bold">乘車條碼</h1>
         </div>
         <div className="flex items-center gap-3">
-          <CalendarPlus
-            className="cursor-pointer w-5 h-5"
-            onClick={handleAddToCalendar}
-          />
-          {copied ? (
-            <Check className="cursor-pointer w-5 h-5" />
-          ) : (
-            <Link
+          <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.9 }}>
+            <CalendarPlus
               className="cursor-pointer w-5 h-5"
-              onClick={handleCopyLink}
+              onClick={handleAddToCalendar}
             />
-          )}
-          <Edit
-            className="cursor-pointer w-5 h-5"
-            onClick={handleEditClick}
-          />
+          </motion.div>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.9 }}>
+            {copied ? (
+              <Check className="cursor-pointer w-5 h-5" />
+            ) : (
+              <Link
+                className="cursor-pointer w-5 h-5"
+                onClick={handleCopyLink}
+              />
+            )}
+          </motion.div>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.9 }}>
+            <Edit
+              className="cursor-pointer w-5 h-5"
+              onClick={handleEditClick}
+            />
+          </motion.div>
         </div>
-      </div>
-      <div className="flex-1 overflow-auto text-black">
+      </motion.div>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex-1 overflow-auto text-black"
+      >
         <div className="p-6 space-y-6">
           {/* 車票基本資訊卡片 */}
           {ticketDataLoading ? (
             <TicketSkeleton />
           ) : (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <motion.div
+              variants={itemVariants}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-xl shadow-sm border border-gray-100 p-4"
+            >
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Train className="w-5 h-5 text-tr-orange" />
@@ -284,58 +325,96 @@ export default function TicketPage() {
                   <span className="text-gray-600">座位：{formatSeat(seat)}</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* QR Code 區域 */}
           {ticketDataLoading ? (
             <QRSkeleton />
           ) : (
-            <div className="bg-gray-50 rounded-xl p-6">
+            <motion.div
+              variants={itemVariants}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-gray-50 rounded-xl p-6"
+            >
               <div className="text-center space-y-4">
-                <p className="text-tr-blue font-medium bg-tr-blue/10 py-2 px-4 rounded-full inline-block">
+                <motion.p
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-tr-blue font-medium bg-tr-blue/10 py-2 px-4 rounded-full inline-block"
+                >
                   限當日當次車有效
-                </p>
-                <div
+                </motion.p>
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={toggleQRCodeSize}
                   className="cursor-pointer transition-all duration-300 ease-in-out bg-white p-4 rounded-lg inline-block shadow-sm"
                 >
-                  <QRCodeGenerator text={token} width={qrCodeWidth} />
-                </div>
-                <p className="text-gray-500 text-sm">點擊可放大/縮小 QR Code</p>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <QRCodeGenerator text={token} width={qrCodeWidth} />
+                  </motion.div>
+                </motion.div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="text-gray-500 text-sm"
+                >
+                  點擊可放大/縮小 QR Code
+                </motion.p>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* 行程資訊標題 */}
-          <div className="bg-tr-yellow/10 border-l-4 border-tr-yellow p-4 rounded-r-lg">
+          <motion.div
+            variants={itemVariants}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="bg-tr-yellow/10 border-l-4 border-tr-yellow p-4 rounded-r-lg"
+          >
             <div className="flex items-center gap-2">
               <Info className="w-5 h-5 text-tr-yellow" />
               <span className="font-medium text-gray-700">行程資訊</span>
             </div>
-          </div>
+          </motion.div>
 
           {statusDataLoading ? (
             <StatusSkeleton />
           ) : (
             <>
-              <div className="p-4">
-                <a
+              <motion.div
+                variants={itemVariants}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="p-4"
+              >
+                <motion.a
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   href={`https://www.railway.gov.tw/tra-tip-web/tip/tip001/tip112/querybytrainno?rideDate=${formated}&trainNo=${nbr}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full bg-tr-blue text-white py-3 px-4 rounded-lg text-center hover:bg-blue-700 transition-colors duration-200"
                 >
                   🚃 查看即時動態
-                </a>
-              </div>
-              <div className="p-4">
+                </motion.a>
+              </motion.div>
+              <motion.div
+                variants={itemVariants}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="p-4"
+              >
                 這裡放起訖站和誤點資訊
-              </div>
+              </motion.div>
             </>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

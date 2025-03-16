@@ -17,7 +17,7 @@ import {
     Check,
     QrCode
 } from 'lucide-react'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 
 interface TicketInfo {
     date: string;
@@ -134,7 +134,13 @@ export default function TicketScanForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            onSubmit={handleSubmit}
+            className="space-y-8"
+        >
             {/* 掃描區域 */}
             <div className="space-y-4">
                 <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
@@ -212,7 +218,12 @@ export default function TicketScanForm() {
             </div>
 
             {/* 基本資訊 */}
-            <div className="space-y-4">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="space-y-4"
+            >
                 <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
                     <span className="w-1 h-6 bg-tr-orange rounded-full"></span>
                     基本資訊
@@ -270,10 +281,15 @@ export default function TicketScanForm() {
                                         focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* 行程資訊 */}
-            <div className="space-y-4">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="space-y-4"
+            >
                 <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
                     <span className="w-1 h-6 bg-tr-yellow rounded-full"></span>
                     行程資訊
@@ -320,10 +336,15 @@ export default function TicketScanForm() {
                                         focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* 按鈕群組 */}
-            <div className="flex gap-4 pt-4">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                className="flex gap-4 pt-4"
+            >
                 <button type="submit"
                     className="flex-1 bg-tr-blue text-white py-3 px-6 rounded-xl
                                  hover:bg-blue-600 transition-colors duration-200 font-medium
@@ -342,7 +363,7 @@ export default function TicketScanForm() {
                     <RotateCcw className="w-5 h-5" />
                     清除表單
                 </button>
-            </div>
-        </form>
+            </motion.div >
+        </motion.form >
     )
 }

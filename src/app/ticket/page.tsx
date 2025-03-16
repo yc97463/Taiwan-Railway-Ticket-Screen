@@ -3,6 +3,7 @@
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { Train } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 // Dynamically import the form component with no SSR
 const TicketScanForm = dynamic(() => import('@/components/TicketScanForm'), {
@@ -62,17 +63,38 @@ function FormSkeleton() {
 
 export default function TicketPage() {
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          <Train className="w-6 h-6 text-tr-blue" />
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-2xl mx-auto p-6"
+    >
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+      >
+        <motion.h1
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+        >
+          <motion.div
+            initial={{ rotate: -20, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <Train className="w-6 h-6 text-tr-blue" />
+          </motion.div>
           車票資訊
-        </h1>
+        </motion.h1>
 
         <Suspense fallback={<FormSkeleton />}>
           <TicketScanForm />
         </Suspense>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
