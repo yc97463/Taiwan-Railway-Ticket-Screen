@@ -8,13 +8,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'roboto': ['var(--font-roboto)'],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
         tr: {
-          blue: "#1285BB",
-          orange: "#FA6203",
+          blue: "#0068b7",
+          orange: "#f29600",
           yellow: "#FFC600",
+          "yello-dark": "#E6A500",
         }
       },
     },
