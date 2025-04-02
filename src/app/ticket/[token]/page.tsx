@@ -19,6 +19,7 @@ import {
   QrCode
 } from "lucide-react"
 import { motion } from "framer-motion"
+import CarriageVisualizer from "@/components/CarriageVisualizer"
 
 interface TicketData {
   id: string;
@@ -59,6 +60,17 @@ export default function TicketPage() {
     const [carriage, seatNumber] = seatString.split(' ');
     return `${carriage} 車 ${seatNumber.padStart(2, '0')} 號`;
   }
+
+  // Parse seat information for CarriageVisualizer
+  const getCarriageAndSeatNumber = () => {
+    if (!seat) return { carriageNumber: '1', seatNumber: '1' };
+
+    const parts = seat.split(' ');
+    return {
+      carriageNumber: parts[0] || '1',
+      seatNumber: parts[1] || '1',
+    };
+  };
 
   useEffect(() => {
     if (!token) {
@@ -359,6 +371,14 @@ export default function TicketPage() {
                       <p className="text-tr-blue font-medium">{arrival}</p>
                     </div>
                   </div>
+
+                  {/* Add CarriageVisualizer inside expandable content */}
+                  {seat && (
+                    <CarriageVisualizer
+                      carriageNumber={getCarriageAndSeatNumber().carriageNumber}
+                      seatNumber={getCarriageAndSeatNumber().seatNumber}
+                    />
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -474,7 +494,7 @@ export default function TicketPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full bg-tr-blue text-white py-3 px-4 rounded-lg text-center hover:bg-blue-700 transition-colors duration-200"
-                >
+                >  );
                   🚃 查看即時動態
                 </motion.a>
               </motion.div>
