@@ -55,20 +55,29 @@ export default function TicketPage() {
 
   // Format seat for display
   const formatSeat = (seatString: string | null): string => {
-    if (!seatString) return '';
+    if (!seatString) return '自由座';
+    if (seatString === '自由座') return '自由座';
+
     const [carriage, seatNumber] = seatString.split(' ');
+    if (!seatNumber) return '自由座';
+
     return `${carriage} 車 ${seatNumber.padStart(2, '0')} 號`;
   }
 
   // Parse seat information for CarriageVisualizer
   const getCarriageAndSeatNumber = () => {
-    if (!seat) return { carriageNumber: '1', seatNumber: '1' };
+    if (!seat || seat === '自由座') return { carriageNumber: '', seatNumber: '' };
 
     const parts = seat.split(' ');
     return {
-      carriageNumber: parts[0] || '1',
-      seatNumber: parts[1] || '1',
+      carriageNumber: parts[0] || '',
+      seatNumber: parts[1] || '',
     };
+  };
+
+  // Check if seat visualization should be shown
+  const shouldShowSeatVisualization = () => {
+    return type === '自強3000' && seat && seat !== '自由座';
   };
 
   useEffect(() => {
@@ -370,14 +379,34 @@ export default function TicketPage() {
                     </div>
                   </div>
 
-                  {/* Add CarriageVisualizer inside expandable content */}
-                  {seat && (
+                  {/* Add CarriageVisualizer only for 自強3000 trains with assigned seats */}
+                  {shouldShowSeatVisualization() && (
                     <CarriageVisualizer
                       carriageNumber={getCarriageAndSeatNumber().carriageNumber}
                       seatNumber={getCarriageAndSeatNumber().seatNumber}
-                      isVisible={isCardExpanded} // Pass the expanded state to control scrolling
+                      isVisible={isCardExpanded}
                     />
                   )}
+
+                  {/* Show free seating notice for local trains or when seat is empty */}
+                  {(!seat || seat === '自由座' ||
+                    type === '區間' || type === '區間快') && (
+                      <div className="mt-3 p-3 bg-tr-yellow/10 rounded-lg border border-tr-yellow/20">
+                        <div className="flex items-center gap-2">
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                          >
+                            <Check className="w-5 h-5 p-1 bg-tr-yellow text-white rounded-full" />
+                          </motion.div>
+                          <div className="text-gray-700 font-medium">自由座車廂</div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 ml-7">
+                          本車次無指定座位，請自行入座
+                        </p>
+                      </div>
+                    )}
                 </div>
               </motion.div>
             </motion.div>
