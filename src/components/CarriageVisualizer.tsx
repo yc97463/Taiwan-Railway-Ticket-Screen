@@ -270,9 +270,9 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                     <span className="text-sm text-gray-700">
                         您的座位：
                         <span className="font-medium text-tr-blue">{userSeatNum}號</span>
-                        <span className="text-xs text-gray-500 ml-1">
+                        {/* <span className="text-xs text-gray-500 ml-1">
                             (靠近{isCloserToFront ? '車頭' : '車尾'}門)
-                        </span>
+                        </span> */}
                     </span>
                 </div>
                 {userSeatNum % 4 === 2 || userSeatNum % 4 === 1 ? (

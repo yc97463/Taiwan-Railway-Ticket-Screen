@@ -258,7 +258,7 @@ export default function TicketPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="max-w-[400px] mx-auto bg-white h-screen flex flex-col"
+      className="max-w-[400px] mx-auto bg-white h-screen flex flex-col border"
     >
       <motion.div
         initial={{ y: -20, opacity: 0 }}
