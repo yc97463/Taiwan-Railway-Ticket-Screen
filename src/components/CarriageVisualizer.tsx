@@ -13,6 +13,12 @@ interface CarriageVisualizerProps {
 export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisible = false }: CarriageVisualizerProps) {
     // Parse the user's seat information
     const userSeatNum = parseInt(seatNumber, 10);
+    const carriageNum = parseInt(carriageNumber, 10);
+
+    // Determine if carriage is in the reversed section (9-12)
+    const isReversedCarriage = useMemo(() => {
+        return carriageNum >= 9 && carriageNum <= 12;
+    }, [carriageNum]);
 
     // Refs for scrolling
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -144,7 +150,10 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                     <Train className="w-4 h-4 text-tr-blue" />
                     <span className="text-tr-blue font-medium">{carriageNumber}號車廂</span>
                 </div>
-                <span className="text-xs text-gray-500">2+2座位配置 (共{totalSeats}座)</span>
+                <span className="text-xs text-gray-500">
+                    2+2座位配置 (共{totalSeats}座)
+                    {isReversedCarriage ? ' - 逆向編號' : ''}
+                </span>
             </div>
 
             <motion.div
@@ -153,7 +162,7 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                 transition={{ duration: 0.4 }}
                 className="relative bg-white border border-gray-200 rounded-lg p-4 overflow-x-auto"
             >
-                {/* Left and right indicators - with conditional highlighting */}
+                {/* Left and right indicators - with conditional highlighting AND reversed carriage logic */}
                 <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2/5 
                     ${!isCloserToFront ? 'bg-tr-yellow text-tr-yellow-dark' : 'bg-gray-200 text-gray-500'} 
                     px-1 py-1 rounded-r-full z-10 transition-colors duration-300`}
@@ -161,7 +170,9 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                     <span className="text-xs pl-0 pr-1 flex items-center justify-center gap-0.5">
                         <ArrowLeft className="w-3" />
                         <span>
-                            {parseInt(carriageNumber) === 1 ? '駕駛室' : `${parseInt(carriageNumber) - 1} 車`}
+                            {isReversedCarriage ?
+                                (carriageNum === 12 ? '駕駛室' : `${carriageNum + 1} 車`) :
+                                (carriageNum === 1 ? '駕駛室' : `${carriageNum - 1} 車`)}
                         </span>
                     </span>
                 </div>
@@ -172,8 +183,9 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                 >
                     <span className="text-xs pl-1 pr-0 flex items-center justify-center gap-0.5">
                         <span>
-                            {parseInt(carriageNumber) === 12 ? '駕駛室' : `${parseInt(carriageNumber) + 1} 車`}
-
+                            {isReversedCarriage ?
+                                (carriageNum === 9 ? '駕駛室' : `${carriageNum - 1} 車`) :
+                                (carriageNum === 12 ? '駕駛室' : `${carriageNum + 1} 車`)}
                         </span>
                         <ArrowRight className="w-3" />
                     </span>
