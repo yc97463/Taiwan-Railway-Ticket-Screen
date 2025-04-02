@@ -161,7 +161,7 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                     <span className="text-xs pl-0 pr-1 flex items-center justify-center gap-0.5">
                         <ArrowLeft className="w-3" />
                         <span>
-                            {parseInt(carriageNumber) === 1 ? '機頭' : `${parseInt(carriageNumber) - 1} 車`}
+                            {parseInt(carriageNumber) === 1 ? '駕駛室' : `${parseInt(carriageNumber) - 1} 車`}
                         </span>
                     </span>
                 </div>
@@ -172,7 +172,7 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                 >
                     <span className="text-xs pl-1 pr-0 flex items-center justify-center gap-0.5">
                         <span>
-                            {parseInt(carriageNumber) === 12 ? '機頭' : `${parseInt(carriageNumber) + 1} 車`}
+                            {parseInt(carriageNumber) === 12 ? '駕駛室' : `${parseInt(carriageNumber) + 1} 車`}
 
                         </span>
                         <ArrowRight className="w-3" />
