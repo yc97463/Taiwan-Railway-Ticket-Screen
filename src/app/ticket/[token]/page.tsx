@@ -299,36 +299,63 @@ export default function TicketPage() {
             <motion.div
               variants={itemVariants}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-4"
+              onClick={toggleCard}
+              className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer"
             >
-              <div className="space-y-3">
+              {/* Collapsed view showing only train number and seat */}
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Train className="w-5 h-5 text-tr-orange" />
-                  <span className="text-tr-orange font-medium text-lg">{type}</span>
-                  <span className="text-gray-600">#{nbr}</span>
+                  <Train className={`w-5 h-5 ${isCardExpanded ? "text-tr-orange" : "text-tr-blue"} transition-colors duration-300`} />
+                  <span className={`${isCardExpanded ? "text-tr-orange" : "text-tr-blue"} font-medium text-lg transition-colors duration-300`}>
+                    {type} <span className="text-gray-600">#{nbr}</span>
+                  </span>
                 </div>
+
                 <div className="flex items-center gap-2 text-gray-600">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  <span>{date}</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="text-center">
-                    <p className="text-gray-500 text-sm">出發</p>
-                    <p className="font-medium text-lg">{from}</p>
-                    <p className="text-tr-blue font-medium">{departure}</p>
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
-                  <div className="text-center">
-                    <p className="text-gray-500 text-sm">抵達</p>
-                    <p className="font-medium text-lg">{to}</p>
-                    <p className="text-tr-blue font-medium">{arrival}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                   <Armchair className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-600">座位：{formatSeat(seat)}</span>
+                  <span className="text-gray-600 text-sm">{formatSeat(seat)}</span>
+
+                  <motion.div
+                    animate={{ rotate: isCardExpanded ? 90 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                  </motion.div>
                 </div>
               </div>
+
+              {/* Expandable content */}
+              <motion.div
+                initial={false}
+                animate={{
+                  height: isCardExpanded ? "auto" : 0,
+                  opacity: isCardExpanded ? 1 : 0,
+                  marginTop: isCardExpanded ? 16 : 0
+                }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span>{date}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between py-2">
+                    <div className="text-center">
+                      <p className="text-gray-500 text-sm">出發</p>
+                      <p className="font-medium text-lg">{from}</p>
+                      <p className="text-tr-blue font-medium">{departure}</p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                    <div className="text-center">
+                      <p className="text-gray-500 text-sm">抵達</p>
+                      <p className="font-medium text-lg">{to}</p>
+                      <p className="text-tr-blue font-medium">{arrival}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           )}
 
