@@ -210,12 +210,12 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                         </div>
 
                         {/* Central aisle */}
-                        <div className="relative flex h-5 mb-2">
+                        <div className="relative flex h-6 mb-2">
                             <div className="absolute inset-0 bg-gray-50 rounded-full opacity-70">
-                                <div className="z-10 w-full flex justify-center items-center">
-                                    <DoorClosed className="w-4 h-4 text-gray-300 -rotate-90 absolute left-4" />
+                                <div className="z-10 w-full flex justify-center items-center py-1">
+                                    <DoorClosed className="w-4 h-4 text-gray-300 absolute left-4" />
                                     <span className="text-xs text-gray-400">走 道</span>
-                                    <DoorClosed className="w-4 h-4 text-gray-300 -rotate-90 absolute right-4" />
+                                    <DoorClosed className="w-4 h-4 text-gray-300 absolute right-4" />
                                 </div>
                             </div>
                         </div>
@@ -285,11 +285,15 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
             {/* Legend */}
             <div className="mt-2 flex items-center justify-end gap-3">
                 <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-tr-yellow rounded-sm"></div>
+                    <span className="text-xs text-gray-500">此處上車</span>
+                </div>
+                <div className="flex items-center gap-1">
                     <div className="w-3 h-3 bg-tr-blue rounded-sm"></div>
                     <span className="text-xs text-gray-500">您的座位</span>
                 </div>
                 <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 bg-gray-100 rounded-sm"></div>
+                    <div className="w-3 h-3 bg-gray-100 rounded-sm border"></div>
                     <span className="text-xs text-gray-500">其他座位</span>
                 </div>
             </div>
