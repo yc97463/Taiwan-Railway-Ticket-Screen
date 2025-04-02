@@ -32,7 +32,7 @@ const SeatRow = ({
     seatType: SeatType,
     seatRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>
 }) => (
-    <div className="flex space-x-1 mb-1">
+    <div className="flex space-x-1 my-0.5">
         {seats.map((section, idx) => {
             const seatNum = section[seatType];
             if (!seatNum) return null;
@@ -74,12 +74,12 @@ const CarriageHeader = ({
 );
 
 const CarriageAisle = () => (
-    <div className="relative flex h-6 mb-2">
-        <div className="absolute inset-0 bg-gray-50 rounded-full opacity-70">
-            <div className="z-10 w-full flex justify-center items-center py-1">
-                <DoorClosed className="w-4 h-4 text-gray-300 absolute left-4" />
+    <div className="w-full my-1 relative">
+        <div className="h-8 bg-gray-50 rounded-full opacity-70">
+            <div className="w-full h-full flex justify-center items-center">
+                <DoorClosed className="w-4 h-4 text-gray-300 absolute left-12" />
                 <span className="text-xs text-gray-400">走 道</span>
-                <DoorClosed className="w-4 h-4 text-gray-300 absolute right-4" />
+                <DoorClosed className="w-4 h-4 text-gray-300 absolute right-12" />
             </div>
         </div>
     </div>
@@ -297,9 +297,9 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="relative bg-white border border-gray-200 rounded-lg p-4 overflow-x-auto"
+                className="relative bg-white border border-gray-200 rounded-lg p-4 overflow-hidden"
             >
-                {/* Carriage indicators with special rule for carriages 9-12 */}
+                {/* Fixed navigation indicators */}
                 <CarriageIndicators
                     carriageNum={carriageNum}
                     isReversedCarriage={isReversedCarriage}
@@ -312,42 +312,36 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                     <span className="pr-2">靠窗</span>
                 </div>
 
-                {/* Scrollable seat layout */}
+                {/* Scrollable seat layout - now includes the aisle */}
                 <div
                     ref={scrollContainerRef}
                     className="overflow-x-auto pb-2 scroll-smooth"
                 >
                     <div className="flex flex-col" style={{ minWidth: `${containerMinWidth}px` }}>
-                        {/* Top window seats */}
+                        {/* Top row seats */}
                         <SeatRow
                             seats={seats}
                             userSeatNum={userSeatNum}
                             seatType="topWindow"
                             seatRefs={userSeatRefs}
                         />
+                        <SeatRow
+                            seats={seats}
+                            userSeatNum={userSeatNum}
+                            seatType="topAisle"
+                            seatRefs={userSeatRefs}
+                        />
 
-                        {/* Top aisle seats */}
-                        <div className="mb-1">
-                            <SeatRow
-                                seats={seats}
-                                userSeatNum={userSeatNum}
-                                seatType="topAisle"
-                                seatRefs={userSeatRefs}
-                            />
-                        </div>
-
-                        {/* Central aisle */}
+                        {/* Aisle now moves with the seats */}
                         <CarriageAisle />
 
-                        {/* Bottom aisle seats */}
+                        {/* Bottom row seats */}
                         <SeatRow
                             seats={seats}
                             userSeatNum={userSeatNum}
                             seatType="bottomAisle"
                             seatRefs={userSeatRefs}
                         />
-
-                        {/* Bottom window seats */}
                         <SeatRow
                             seats={seats}
                             userSeatNum={userSeatNum}
