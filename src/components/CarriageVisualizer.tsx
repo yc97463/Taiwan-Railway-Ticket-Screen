@@ -71,6 +71,12 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
     // Calculate min-width based on the number of sections to ensure proper scrolling
     const containerMinWidth = Math.max(350, totalSections * 14 * 4);
 
+    // Determine which end of the carriage the seat is closer to
+    const isCloserToFront = useMemo(() => {
+        // Using the binary approach: if seat number is greater than half of total seats, it's closer to front
+        return userSeatNum > totalSeats / 2;
+    }, [userSeatNum, totalSeats]);
+
     // Effect to scroll to user's seat position when component becomes visible
     useEffect(() => {
         // Only scroll if the component is visible and we haven't scrolled yet
@@ -142,13 +148,19 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                 transition={{ duration: 0.4 }}
                 className="relative bg-white border border-gray-200 rounded-lg p-4 overflow-x-auto"
             >
-                {/* Left and right indicators - changed to show only half circle and simplified text */}
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2/5 bg-gray-200 px-1 py-1 rounded-r-full z-10">
-                    <span className="text-xs text-gray-500 pl-1 pr-0.5">尾</span>
+                {/* Left and right indicators - with conditional highlighting */}
+                <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2/5 
+                    ${!isCloserToFront ? 'bg-tr-yellow text-tr-yellow-dark' : 'bg-gray-200 text-gray-500'} 
+                    px-1 py-1 rounded-r-full z-10 transition-colors duration-300`}
+                >
+                    <span className="text-xs pl-1 pr-0.5">尾</span>
                 </div>
 
-                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2/5 bg-gray-200 px-1 py-1 rounded-l-full z-10">
-                    <span className="text-xs text-gray-500 pl-0.5 pr-1">頭</span>
+                <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2/5 
+                    ${isCloserToFront ? 'bg-tr-yellow text-tr-yellow-dark' : 'bg-gray-200 text-gray-500'} 
+                    px-1 py-1 rounded-l-full z-10 transition-colors duration-300`}
+                >
+                    <span className="text-xs pl-0.5 pr-1">頭</span>
                 </div>
 
                 {/* Top row with labels */}
@@ -251,11 +263,17 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                 </div>
             </motion.div>
 
-            {/* Current seat indicator */}
+            {/* Current seat indicator with enhanced information */}
             <div className="mt-3 p-2 bg-tr-blue/10 rounded-lg border border-tr-blue/20 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Armchair className="w-4 h-4 text-tr-blue" />
-                    <span className="text-sm text-gray-700">您的座位：<span className="font-medium text-tr-blue">{userSeatNum}號</span></span>
+                    <span className="text-sm text-gray-700">
+                        您的座位：
+                        <span className="font-medium text-tr-blue">{userSeatNum}號</span>
+                        <span className="text-xs text-gray-500 ml-1">
+                            (靠近{isCloserToFront ? '車頭' : '車尾'}門)
+                        </span>
+                    </span>
                 </div>
                 {userSeatNum % 4 === 2 || userSeatNum % 4 === 1 ? (
                     <span className="text-xs bg-tr-blue/20 text-tr-blue px-2 py-0.5 rounded">靠窗</span>
@@ -263,6 +281,7 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                     <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">走道</span>
                 )}
             </div>
+
             {/* Legend */}
             <div className="mt-2 flex items-center justify-end gap-3">
                 <div className="flex items-center gap-1">
