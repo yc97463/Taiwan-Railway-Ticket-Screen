@@ -258,13 +258,13 @@ export default function TicketPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="max-w-[400px] mx-auto bg-white h-screen flex flex-col border"
+      className="max-w-[400px] mx-auto bg-white h-screen flex flex-col"
     >
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="flex justify-between items-center bg-tr-blue p-4 text-white"
+        className="flex justify-between items-center bg-tr-blue p-4 text-white border-tr-blue"
       >
         <div className="flex items-center gap-2">
           <motion.div whileHover={{ x: -3 }} whileTap={{ scale: 0.9 }}>
@@ -304,7 +304,7 @@ export default function TicketPage() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="flex-1 overflow-auto text-black"
+        className="flex-1 overflow-auto text-black border border-t-0"
       >
         <div className="p-6 space-y-6">
           {/* 車票基本資訊卡片 */}
