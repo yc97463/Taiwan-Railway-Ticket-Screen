@@ -13,7 +13,10 @@ import {
   ArrowRight,
   Train,
   Info,
-  Armchair
+  Armchair,
+  EyeOff,
+  Eye,
+  QrCode
 } from "lucide-react"
 import { motion } from "framer-motion"
 
@@ -43,7 +46,7 @@ export default function TicketPage() {
   const [statusDataLoading, setStatusDataLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [qrCodeWidth, setQRCodeWidth] = useState(200)
+  const [qrCodeBlurred, setQrCodeBlurred] = useState(false)
 
   // Format seat for display
   const formatSeat = (seatString: string | null): string => {
@@ -100,8 +103,8 @@ export default function TicketPage() {
     router.push('/ticket');
   }
 
-  const toggleQRCodeSize = () => {
-    setQRCodeWidth(prevWidth => prevWidth === 200 ? 250 : 200);
+  const toggleQRCodeVisibility = () => {
+    setQrCodeBlurred(!qrCodeBlurred);
   }
 
   const getGoogleCalendarUrl = () => {
@@ -207,6 +210,7 @@ export default function TicketPage() {
           <div className="w-[200px] h-[200px] bg-gray-200 rounded-md"></div>
         </div>
         <div className="h-4 w-40 bg-gray-200 rounded mx-auto"></div>
+        <div className="h-8 w-64 bg-gray-200 rounded mx-auto"></div>
       </div>
     </div>
   );
@@ -346,28 +350,53 @@ export default function TicketPage() {
                 >
                   限當日當次車有效
                 </motion.p>
+
                 <motion.div
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={toggleQRCodeSize}
-                  className="cursor-pointer transition-all duration-300 ease-in-out bg-white p-4 rounded-lg inline-block shadow-sm"
+                  onClick={toggleQRCodeVisibility}
+                  className="relative cursor-pointer transition-all duration-300 ease-in-out bg-white p-4 rounded-lg inline-block shadow-sm"
                 >
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
+                    className={qrCodeBlurred ? "filter blur-md transition-all duration-300" : "transition-all duration-300"}
                   >
-                    <QRCodeGenerator text={token} width={qrCodeWidth} />
+                    <QRCodeGenerator text={token} width={200} />
                   </motion.div>
+
+                  {qrCodeBlurred && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-lg"
+                    >
+                      <Eye className="w-12 h-12 text-white drop-shadow-md" />
+                    </motion.div>
+                  )}
                 </motion.div>
+
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
                   className="text-gray-500 text-sm"
                 >
-                  點擊可放大/縮小 QR Code
+                  {qrCodeBlurred ? "點擊顯示 QR Code" : "點擊隱藏 QR Code"}
                 </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="bg-gray-100 py-3 px-4 rounded-lg inline-flex items-center gap-2 max-w-full overflow-hidden"
+                >
+                  <QrCode className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                  <code className="text-sm font-mono text-gray-600 overflow-x-auto scrollbar-hide whitespace-nowrap">
+                    {token}
+                  </code>
+                </motion.div>
               </div>
             </motion.div>
           )}
