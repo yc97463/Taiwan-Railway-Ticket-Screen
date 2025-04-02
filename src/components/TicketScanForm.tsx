@@ -154,10 +154,16 @@ export default function TicketScanForm() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        // Format the seat information as "carriage seat" for URL parameters
-        const formattedSeat = ticketInfo.carriage && ticketInfo.seat
-            ? `${ticketInfo.carriage} ${ticketInfo.seat}`
-            : ticketInfo.seat
+        // Set default 'free seating' value for local trains
+        let formattedSeat = '';
+        if (ticketInfo.type === '區間' || ticketInfo.type === '區間快') {
+            formattedSeat = '自由座';
+        } else {
+            // Format the seat information as "carriage seat" for URL parameters
+            formattedSeat = ticketInfo.carriage && ticketInfo.seat
+                ? `${ticketInfo.carriage} ${ticketInfo.seat}`
+                : ticketInfo.seat;
+        }
 
         // Create search params without the token
         const { token, carriage, seat, ...otherParams } = ticketInfo
@@ -317,105 +323,155 @@ export default function TicketScanForm() {
                             座位
                         </label>
                         <div className="relative">
-                            <button
-                                type="button"
-                                onClick={() => setShowSeatSelector(prev => !prev)}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        text-left flex items-center justify-between
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent
-                                        hover:bg-gray-50 transition-colors"
-                            >
-                                <span>
-                                    {ticketInfo.carriage && ticketInfo.seat
-                                        ? `${ticketInfo.carriage} 車廂 ${ticketInfo.seat} 號座位`
-                                        : "選擇座位"}
-                                </span>
-                                <ChevronDown className={`w-4 h-4 transition-transform ${showSeatSelector ? 'rotate-180' : ''}`} />
-                            </button>
+                            {ticketInfo.type === '自強3000' ? (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowSeatSelector(prev => !prev)}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                                text-left flex items-center justify-between
+                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent
+                                                hover:bg-gray-50 transition-colors"
+                                    >
+                                        <span>
+                                            {ticketInfo.carriage && ticketInfo.seat
+                                                ? `${ticketInfo.carriage} 車 ${ticketInfo.seat} 號`
+                                                : "選擇座位"}
+                                        </span>
+                                        <ChevronDown className={`w-4 h-4 transition-transform ${showSeatSelector ? 'rotate-180' : ''}`} />
+                                    </button>
 
-                            {showSeatSelector && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="fixed sm:absolute left-0 right-0 sm:left-auto sm:right-auto top-0 sm:top-auto 
-                                              bottom-0 sm:bottom-auto sm:mt-2 z-50 max-h-[90vh] sm:max-h-[80vh] 
-                                              sm:w-[calc(100vw-3rem)] md:w-[32rem] bg-white 
-                                              border border-gray-200 rounded-t-xl sm:rounded-lg shadow-xl 
-                                              overflow-auto"
-                                >
-                                    <div className="sticky top-0 bg-white z-10 p-4 border-b border-gray-100 flex justify-between items-center">
-                                        <h3 className="font-medium text-gray-700">選擇車廂與座位</h3>
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowSeatSelector(false)}
-                                            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500"
+                                    {showSeatSelector && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="fixed sm:absolute left-0 right-0 sm:left-auto sm:right-auto top-0 sm:top-auto 
+                                                    bottom-0 sm:bottom-auto sm:mt-2 z-50 max-h-[dvh] sm:max-h-[80vh] 
+                                                    sm:w-[calc(100vw-3rem)] md:w-[32rem] bg-white 
+                                                    border border-gray-200 rounded-t-xl sm:rounded-lg shadow-xl 
+                                                    overflow-auto"
                                         >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-
-                                    <div className="p-4 space-y-4">
-                                        <div className="bg-gray-50 p-3 rounded-lg">
-                                            <p className="text-sm text-gray-600 mb-2">選擇車廂：</p>
-                                            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2 justify-center">
-                                                {availableCarriages.map(carNum => (
-                                                    <button
-                                                        key={carNum}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setTicketInfo(prev => ({ ...prev, carriage: carNum }))
-                                                        }}
-                                                        className={`aspect-square w-full rounded-lg flex items-center justify-center
-                                                                ${ticketInfo.carriage === carNum
-                                                                ? 'bg-tr-blue text-white'
-                                                                : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}
-                                                                transition-colors`}
-                                                    >
-                                                        {carNum}
-                                                    </button>
-                                                ))}
+                                            <div className="sticky top-0 bg-white z-10 p-4 border-b border-gray-100 flex justify-between items-center">
+                                                <h3 className="font-medium text-gray-700">選擇車廂與座位</h3>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowSeatSelector(false)}
+                                                    className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
                                             </div>
-                                        </div>
 
-                                        {ticketInfo.carriage && (
-                                            <CarriageVisualizer
-                                                carriageNumber={ticketInfo.carriage}
-                                                seatNumber={ticketInfo.seat || '1'}
-                                                isVisible={showSeatSelector}
-                                                onSeatSelect={(seatNum) => {
-                                                    setTicketInfo(prev => ({ ...prev, seat: seatNum }))
-                                                    setShowSeatSelector(false)
-                                                }}
-                                                isMobileView={true}
-                                            />
-                                        )}
-                                    </div>
+                                            <div className="p-4 space-y-4">
+                                                <div className="bg-gray-50 p-3 rounded-lg">
+                                                    <p className="text-sm text-gray-600 mb-2">選擇車廂：</p>
+                                                    <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2 justify-center">
+                                                        {availableCarriages.map(carNum => (
+                                                            <button
+                                                                key={carNum}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setTicketInfo(prev => ({ ...prev, carriage: carNum }))
+                                                                }}
+                                                                className={`aspect-square w-full rounded-lg flex items-center justify-center
+                                                                    ${ticketInfo.carriage === carNum
+                                                                        ? 'bg-tr-blue text-white'
+                                                                        : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}
+                                                                    transition-colors`}
+                                                            >
+                                                                {carNum}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
 
-                                    <div className="sticky bottom-0 bg-white p-4 border-t border-gray-100 flex justify-end gap-2">
-                                        <button
-                                            type="button"
+                                                {ticketInfo.carriage && (
+                                                    <CarriageVisualizer
+                                                        carriageNumber={ticketInfo.carriage}
+                                                        seatNumber={ticketInfo.seat || ''}
+                                                        isVisible={showSeatSelector}
+                                                        onSeatSelect={(seatNum) => {
+                                                            setTicketInfo(prev => ({ ...prev, seat: seatNum }))
+                                                            setShowSeatSelector(false)
+                                                        }}
+                                                        isMobileView={true}
+                                                    />
+                                                )}
+                                            </div>
+
+                                            <div className="sticky bottom-0 bg-white p-4 border-t border-gray-100 flex justify-end gap-2">
+                                                {/* <button
+                                                    type="button"
+                                                    onClick={() => setShowSeatSelector(false)}
+                                                    className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                                                >
+                                                    取消
+                                                </button> */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowSeatSelector(false)}
+                                                    className="px-4 py-2 rounded-lg bg-tr-blue text-white hover:bg-blue-600"
+                                                    disabled={!ticketInfo.carriage || !ticketInfo.seat}
+                                                >
+                                                    完成
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {showSeatSelector && (
+                                        <div
+                                            className="fixed inset-0 bg-black/40 z-40 sm:hidden"
                                             onClick={() => setShowSeatSelector(false)}
-                                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                                        ></div>
+                                    )}
+                                </>
+                            ) : ticketInfo.type === '區間' || ticketInfo.type === '區間快' ? (
+                                <div className="bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
+                                    <div className="flex items-center gap-2">
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
                                         >
-                                            取消
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowSeatSelector(false)}
-                                            className="px-4 py-2 rounded-lg bg-tr-blue text-white hover:bg-blue-600"
-                                            disabled={!ticketInfo.carriage || !ticketInfo.seat}
-                                        >
-                                            確認選擇
-                                        </button>
+                                            <Check className="w-5 h-5 p-1 bg-tr-yellow text-white rounded-full" />
+                                        </motion.div>
+                                        <div className="text-gray-700">自由座車廂</div>
                                     </div>
-                                </motion.div>
-                            )}
-
-                            {showSeatSelector && (
-                                <div
-                                    className="fixed inset-0 bg-black/40 z-40 sm:hidden"
-                                    onClick={() => setShowSeatSelector(false)}
-                                ></div>
+                                    <p className="text-xs text-gray-500 mt-1 ml-7">
+                                        此車種為全車自由座，無需指定座位
+                                    </p>
+                                    <input type="hidden" name="carriage" value="" />
+                                    <input type="hidden" name="seat" value="自由座" />
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input
+                                            type="text"
+                                            name="carriage"
+                                            value={ticketInfo.carriage}
+                                            onChange={handleInputChange}
+                                            placeholder="車廂"
+                                            className="px-4 py-2 rounded-lg border border-gray-200 
+                                                  focus:ring-2 focus:ring-tr-blue focus:border-transparent"
+                                        />
+                                        <input
+                                            type="text"
+                                            name="seat"
+                                            value={ticketInfo.seat}
+                                            onChange={handleInputChange}
+                                            placeholder="座位號碼"
+                                            className="px-4 py-2 rounded-lg border border-gray-200 
+                                                  focus:ring-2 focus:ring-tr-blue focus:border-transparent"
+                                        />
+                                    </div>
+                                    {ticketInfo.type && (
+                                        <p className="text-xs text-gray-500 italic">
+                                            視覺化座位選擇僅支援自強 3000 車種
+                                        </p>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>

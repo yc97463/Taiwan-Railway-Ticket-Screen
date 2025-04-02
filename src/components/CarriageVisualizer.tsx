@@ -195,7 +195,7 @@ export default function CarriageVisualizer({
     isMobileView = false
 }: CarriageVisualizerProps) {
     // Parse user's seat information
-    const userSeatNum = parseInt(seatNumber, 10);
+    const userSeatNum = seatNumber ? parseInt(seatNumber, 10) : 0;
     const carriageNum = parseInt(carriageNumber, 10);
 
     // Carriage configuration
@@ -247,6 +247,9 @@ export default function CarriageVisualizer({
 
     // Determine which end of carriage the seat is closer to
     const isCloserToFront = useMemo(() => {
+        // Default to center if no seat is selected
+        if (!userSeatNum) return false;
+
         if (isReversedCarriage) {
             return userSeatNum < totalSeats / 2; // Reversed for 9-12 carriages
         }
@@ -255,7 +258,8 @@ export default function CarriageVisualizer({
 
     // Scroll to user's seat when component becomes visible
     useEffect(() => {
-        if (!isVisible || hasScrolledRef.current) return;
+        // Don't scroll if no seat is selected or component not visible
+        if (!isVisible || hasScrolledRef.current || !userSeatNum) return;
 
         const timer = setTimeout(() => {
             // Determine seat type based on seat number
@@ -384,10 +388,10 @@ export default function CarriageVisualizer({
                 </div>
             </motion.div>
 
-            {/* Seat indicator - only shown when not in selection mode */}
-            {!onSeatSelect && <SeatIndicator userSeatNum={userSeatNum} />}
+            {/* Seat indicator - only shown when not in selection mode and a seat is selected */}
+            {!onSeatSelect && userSeatNum > 0 && <SeatIndicator userSeatNum={userSeatNum} />}
 
-            {/* Instruction text for selection mode */}
+            {/* Instructions based on whether a seat is selected */}
             {onSeatSelect && (
                 <div className="mt-3 text-center text-sm text-gray-600">
                     點擊座位號碼來選擇您的座位
