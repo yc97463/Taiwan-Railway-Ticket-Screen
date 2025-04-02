@@ -47,6 +47,11 @@ export default function TicketPage() {
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [qrCodeBlurred, setQrCodeBlurred] = useState(false)
+  const [isCardExpanded, setIsCardExpanded] = useState(false);
+
+  const toggleCard = () => {
+    setIsCardExpanded(!isCardExpanded);
+  };
 
   // Format seat for display
   const formatSeat = (seatString: string | null): string => {
@@ -410,19 +415,32 @@ export default function TicketPage() {
                   transition={{ delay: 0.6 }}
                   className="text-gray-500 text-sm"
                 >
-                  {qrCodeBlurred ? "點擊顯示 QR Code" : "點擊隱藏 QR Code"}
+                  {qrCodeBlurred ? "按一下顯示 QR Code" : "按一下隱藏 QR Code"}
                 </motion.p>
 
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 }}
-                  className="bg-gray-100 py-3 px-4 rounded-lg inline-flex items-center gap-2 max-w-full overflow-hidden"
+                  className="bg-gray-100 py-3 px-4 rounded-lg inline-flex items-center gap-2 max-w-full w-full overflow-hidden relative"
                 >
                   <QrCode className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                  <code className="text-sm font-mono text-gray-600 overflow-x-auto scrollbar-hide whitespace-nowrap">
-                    {token}
+                  <code className={`text-sm font-mono text-gray-600 overflow-x-auto scrollbar-hide whitespace-nowrap ${qrCodeBlurred ? "filter blur-md" : ""} transition-all duration-300`}>
+                    {qrCodeBlurred ? "••••••••••••••••••••••••" : token}
                   </code>
+                  {qrCodeBlurred && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`absolute inset-0 flex items-center justify-center ${qrCodeBlurred ? "cursor-pointer" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleQRCodeVisibility();
+                      }}
+                    >
+                      <Eye className="w-5 h-5 text-gray-500 ml-6" />
+                    </motion.div>
+                  )}
                 </motion.div>
               </div>
             </motion.div>
