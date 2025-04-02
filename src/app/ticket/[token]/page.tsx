@@ -14,7 +14,6 @@ import {
   Train,
   Info,
   Armchair,
-  EyeOff,
   Eye,
   QrCode
 } from "lucide-react"
@@ -42,7 +41,7 @@ export default function TicketPage() {
   const arrival = searchParams.get("arrival")
   const seat = searchParams.get("seat")
 
-  const [data, setData] = useState<TicketData | null>(null)
+  const [, setData] = useState<TicketData | null>(null)
   const [ticketDataLoading, setTicketDataLoading] = useState(true)
   const [statusDataLoading, setStatusDataLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -82,7 +81,6 @@ export default function TicketPage() {
         setTimeout(() => {
           setData({ id: token });
           setTicketDataLoading(false);
-          console.log(data);
         }, 800);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch data")

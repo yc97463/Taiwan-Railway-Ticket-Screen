@@ -44,29 +44,29 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
     // Calculate the number of sections needed (4 seats per section)
     const totalSections = Math.ceil(totalSeats / 4);
 
-    // Generate seat data for visualization using the numbering system
-    // Window seats: 1, 5, 9, 13... (bottom) and 2, 6, 10, 14... (top)
-    // Aisle seats: 3, 7, 11, 15... (bottom) and 4, 8, 12, 16... (top)
-    const generateSeats = () => {
-        const seats = [];
+    // Memoize the generateSeats function so it can be used as a dependency
+    const generateSeats = useMemo(() => {
+        return () => {
+            const seats = [];
 
-        for (let section = 0; section < totalSections; section++) {
-            const baseNumber = section * 4;
+            for (let section = 0; section < totalSections; section++) {
+                const baseNumber = section * 4;
 
-            // Only add seats that are within the total seat count
-            const seatSection = {
-                topWindow: baseNumber + 2 <= totalSeats ? baseNumber + 2 : null,    // Top row window seat (2, 6, 10...)
-                topAisle: baseNumber + 4 <= totalSeats ? baseNumber + 4 : null,     // Top row aisle seat (4, 8, 12...)
-                bottomAisle: baseNumber + 3 <= totalSeats ? baseNumber + 3 : null,  // Bottom row aisle seat (3, 7, 11...)
-                bottomWindow: baseNumber + 1 <= totalSeats ? baseNumber + 1 : null  // Bottom row window seat (1, 5, 9...)
-            };
+                // Only add seats that are within the total seat count
+                const seatSection = {
+                    topWindow: baseNumber + 2 <= totalSeats ? baseNumber + 2 : null,    // Top row window seat (2, 6, 10...)
+                    topAisle: baseNumber + 4 <= totalSeats ? baseNumber + 4 : null,     // Top row aisle seat (4, 8, 12...)
+                    bottomAisle: baseNumber + 3 <= totalSeats ? baseNumber + 3 : null,  // Bottom row aisle seat (3, 7, 11...)
+                    bottomWindow: baseNumber + 1 <= totalSeats ? baseNumber + 1 : null  // Bottom row window seat (1, 5, 9...)
+                };
 
-            seats.push(seatSection);
-        }
-        return seats;
-    };
+                seats.push(seatSection);
+            }
+            return seats;
+        };
+    }, [totalSeats, totalSections]);
 
-    const seats = useMemo(() => generateSeats(), [totalSections]);
+    const seats = useMemo(() => generateSeats(), [generateSeats]);
 
     // Calculate min-width based on the number of sections to ensure proper scrolling
     const containerMinWidth = Math.max(350, totalSections * 14 * 4);
