@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { DoorClosed, Armchair, Train } from 'lucide-react'
+import { DoorClosed, Armchair, Train, ArrowLeft, ArrowRight } from 'lucide-react'
 
 interface CarriageVisualizerProps {
     carriageNumber: string;
@@ -26,13 +26,18 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
         const carNumber = parseInt(carNum, 10);
 
         // Special carriages with 52 seats
-        if ([8, 9].includes(carNumber)) {
+        if ([2, 4, 5, 8, 9, 10, 11].includes(carNumber)) {
             return 52;
         }
 
         // Special carriages with 40 seats
-        if ([12].includes(carNumber)) {
+        if ([1, 3, 6, 12].includes(carNumber)) {
             return 40;
+        }
+
+        // Special carriages with 28 seats and baby carriage
+        if ([7].includes(carNumber)) {
+            return 28;
         }
 
         // Default to 40 seats for any other carriage
@@ -153,14 +158,25 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                     ${!isCloserToFront ? 'bg-tr-yellow text-tr-yellow-dark' : 'bg-gray-200 text-gray-500'} 
                     px-1 py-1 rounded-r-full z-10 transition-colors duration-300`}
                 >
-                    <span className="text-xs pl-1 pr-0.5">尾</span>
+                    <span className="text-xs pl-0 pr-1 flex items-center justify-center gap-0.5">
+                        <ArrowLeft className="w-3" />
+                        <span>
+                            {parseInt(carriageNumber) === 1 ? '機頭' : `${parseInt(carriageNumber) - 1} 車`}
+                        </span>
+                    </span>
                 </div>
 
                 <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2/5 
                     ${isCloserToFront ? 'bg-tr-yellow text-tr-yellow-dark' : 'bg-gray-200 text-gray-500'} 
                     px-1 py-1 rounded-l-full z-10 transition-colors duration-300`}
                 >
-                    <span className="text-xs pl-0.5 pr-1">頭</span>
+                    <span className="text-xs pl-1 pr-0 flex items-center justify-center gap-0.5">
+                        <span>
+                            {parseInt(carriageNumber) === 12 ? '機頭' : `${parseInt(carriageNumber) + 1} 車`}
+
+                        </span>
+                        <ArrowRight className="w-3" />
+                    </span>
                 </div>
 
                 {/* Top row with labels */}
@@ -286,7 +302,7 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
             <div className="mt-2 flex items-center justify-end gap-3">
                 <div className="flex items-center gap-1">
                     <div className="w-3 h-3 bg-tr-yellow rounded-sm"></div>
-                    <span className="text-xs text-gray-500">此處上車</span>
+                    <span className="text-xs text-gray-500">此門上車</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <div className="w-3 h-3 bg-tr-blue rounded-sm"></div>
