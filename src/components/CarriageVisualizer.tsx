@@ -9,6 +9,8 @@ interface CarriageVisualizerProps {
     carriageNumber: string;
     seatNumber: string;
     isVisible?: boolean;
+    onSeatSelect?: (seatNumber: string) => void;
+    isMobileView?: boolean; // Add property for mobile-specific adjustments
 }
 
 interface SeatSection {
@@ -25,12 +27,16 @@ const SeatRow = ({
     seats,
     userSeatNum,
     seatType,
-    seatRefs
+    seatRefs,
+    onSeatSelect,
+    isMobileView
 }: {
     seats: SeatSection[],
     userSeatNum: number,
     seatType: SeatType,
-    seatRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>
+    seatRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>,
+    onSeatSelect?: (seatNum: string) => void,
+    isMobileView?: boolean
 }) => (
     <div className="flex space-x-1 my-0.5">
         {seats.map((section, idx) => {
@@ -42,8 +48,10 @@ const SeatRow = ({
                     key={`${seatType}-${idx}`}
                     ref={seatNum === userSeatNum ?
                         (el) => { seatRefs.current[seatType] = el; } : undefined}
-                    className={`w-12 h-7 flex items-center justify-center rounded text-xs 
-                        ${seatNum === userSeatNum ? 'bg-tr-blue text-white' : 'bg-gray-100 text-gray-600'}`}
+                    className={`w-12 h-7 ${isMobileView ? 'h-8' : 'h-7'} flex items-center justify-center rounded text-xs 
+                        ${seatNum === userSeatNum ? 'bg-tr-blue text-white' : 'bg-gray-100 text-gray-600'}
+                        ${onSeatSelect ? 'cursor-pointer hover:bg-gray-200 hover:text-gray-800 active:bg-gray-300' : ''}`}
+                    onClick={() => onSeatSelect && onSeatSelect(seatNum.toString())}
                 >
                     {seatNum}
                 </div>
@@ -179,7 +187,13 @@ const Legend = () => (
 );
 
 // Main component
-export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisible = false }: CarriageVisualizerProps) {
+export default function CarriageVisualizer({
+    carriageNumber,
+    seatNumber,
+    isVisible = false,
+    onSeatSelect,
+    isMobileView = false
+}: CarriageVisualizerProps) {
     // Parse user's seat information
     const userSeatNum = parseInt(seatNumber, 10);
     const carriageNum = parseInt(carriageNumber, 10);
@@ -226,7 +240,10 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
     }, [totalSeats, totalSections]);
 
     const seats = useMemo(() => generateSeats(), [generateSeats]);
-    const containerMinWidth = Math.max(350, totalSections * 14 * 4);
+    const containerMinWidth = useMemo(() => {
+        const baseWidth = Math.max(300, totalSections * 14 * 4);
+        return isMobileView ? Math.min(baseWidth, window.innerWidth - 40) : baseWidth;
+    }, [totalSections, isMobileView]);
 
     // Determine which end of carriage the seat is closer to
     const isCloserToFront = useMemo(() => {
@@ -287,7 +304,7 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
     }, [isVisible]);
 
     return (
-        <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+        <div className={`${isMobileView ? 'mt-0' : 'mt-4'} bg-gray-50 p-4 rounded-lg`}>
             <CarriageHeader
                 carriageNumber={carriageNumber}
                 totalSeats={totalSeats}
@@ -325,12 +342,16 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                             userSeatNum={userSeatNum}
                             seatType="topWindow"
                             seatRefs={userSeatRefs}
+                            onSeatSelect={onSeatSelect}
+                            isMobileView={isMobileView}
                         />
                         <SeatRow
                             seats={seats}
                             userSeatNum={userSeatNum}
                             seatType="topAisle"
                             seatRefs={userSeatRefs}
+                            onSeatSelect={onSeatSelect}
+                            isMobileView={isMobileView}
                         />
 
                         {/* Aisle now moves with the seats */}
@@ -342,12 +363,16 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                             userSeatNum={userSeatNum}
                             seatType="bottomAisle"
                             seatRefs={userSeatRefs}
+                            onSeatSelect={onSeatSelect}
+                            isMobileView={isMobileView}
                         />
                         <SeatRow
                             seats={seats}
                             userSeatNum={userSeatNum}
                             seatType="bottomWindow"
                             seatRefs={userSeatRefs}
+                            onSeatSelect={onSeatSelect}
+                            isMobileView={isMobileView}
                         />
                     </div>
                 </div>
@@ -359,11 +384,34 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisib
                 </div>
             </motion.div>
 
-            {/* Seat indicator */}
-            <SeatIndicator userSeatNum={userSeatNum} />
+            {/* Seat indicator - only shown when not in selection mode */}
+            {!onSeatSelect && <SeatIndicator userSeatNum={userSeatNum} />}
+
+            {/* Instruction text for selection mode */}
+            {onSeatSelect && (
+                <div className="mt-3 text-center text-sm text-gray-600">
+                    點擊座位號碼來選擇您的座位
+                </div>
+            )}
 
             {/* Legend */}
-            <Legend />
+            {!isMobileView && <Legend />}
+            {isMobileView && (
+                <div className="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1">
+                    <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-tr-yellow rounded-sm"></div>
+                        <span className="text-xs text-gray-500">此門上車</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-tr-blue rounded-sm"></div>
+                        <span className="text-xs text-gray-500">您的座位</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-gray-100 rounded-sm border"></div>
+                        <span className="text-xs text-gray-500">其他座位</span>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

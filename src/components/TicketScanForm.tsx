@@ -15,9 +15,16 @@ import {
     Save,
     RotateCcw,
     Check,
-    QrCode
+    QrCode,
+    ChevronDown
 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
+
+// Dynamically import CarriageVisualizer with no SSR
+const CarriageVisualizer = dynamic(() => import('@/components/CarriageVisualizer'), {
+    ssr: false
+})
 
 interface TicketInfo {
     date: string;
@@ -27,6 +34,7 @@ interface TicketInfo {
     to: string;
     departure: string;
     arrival: string;
+    carriage: string;
     seat: string;
     token: string;
 }
@@ -41,13 +49,15 @@ export default function TicketScanForm() {
         to: '',
         departure: '',
         arrival: '',
+        carriage: '',
         seat: '',
         token: ''
     })
+    const [showSeatSelector, setShowSeatSelector] = useState(false)
     const scannerRef = useRef<Html5QrcodeScanner | null>(null)
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(false)
 
     useEffect(() => {
         // Populate form fields from URL parameters
@@ -58,7 +68,17 @@ export default function TicketScanForm() {
         const to = searchParams.get('to') || ''
         const departure = searchParams.get('departure') || ''
         const arrival = searchParams.get('arrival') || ''
-        const seat = searchParams.get('seat') || ''
+
+        // Parse seat parameter which might be in format "1 05" or just "05"
+        const seatParam = searchParams.get('seat') || ''
+        let carriage = ''
+        let seat = ''
+
+        if (seatParam.includes(' ')) {
+            [carriage, seat] = seatParam.split(' ')
+        } else {
+            seat = seatParam
+        }
 
         const tokenFromUrl = searchParams.get('token') || '';
         setTicketInfo({
@@ -69,6 +89,7 @@ export default function TicketScanForm() {
             to,
             departure,
             arrival,
+            carriage,
             seat,
             token: tokenFromUrl,
         });
@@ -121,17 +142,38 @@ export default function TicketScanForm() {
         setTicketInfo(prev => ({ ...prev, [name]: value }))
     }
 
+    const handleSeatSelection = (carriageNumber: string, seatNumber: string) => {
+        setTicketInfo(prev => ({
+            ...prev,
+            carriage: carriageNumber,
+            seat: seatNumber
+        }))
+        setShowSeatSelector(false)
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        console.log('Submitted ticket info:', ticketInfo)
+
+        // Format the seat information as "carriage seat" for URL parameters
+        const formattedSeat = ticketInfo.carriage && ticketInfo.seat
+            ? `${ticketInfo.carriage} ${ticketInfo.seat}`
+            : ticketInfo.seat
 
         // Create search params without the token
-        const { token, ...searchParams } = ticketInfo
+        const { token, carriage, seat, ...otherParams } = ticketInfo
+        const searchParams = {
+            ...otherParams,
+            seat: formattedSeat
+        }
+
         const queryString = new URLSearchParams(searchParams).toString()
 
         // Navigate to the ticket page with token in route and other info as search params
         router.push(`/ticket/${token}?${queryString}`)
     }
+
+    // Available carriages for selection
+    const availableCarriages = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 
     return (
         <motion.form
@@ -274,11 +316,108 @@ export default function TicketScanForm() {
                             <Armchair className="w-4 h-4" />
                             座位
                         </label>
-                        <input type="text" name="seat" value={ticketInfo.seat}
-                            onChange={handleInputChange}
-                            placeholder="1 05"
-                            className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setShowSeatSelector(prev => !prev)}
+                                className="w-full px-4 py-2 rounded-lg border border-gray-200 
+                                        text-left flex items-center justify-between
+                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent
+                                        hover:bg-gray-50 transition-colors"
+                            >
+                                <span>
+                                    {ticketInfo.carriage && ticketInfo.seat
+                                        ? `${ticketInfo.carriage} 車廂 ${ticketInfo.seat} 號座位`
+                                        : "選擇座位"}
+                                </span>
+                                <ChevronDown className={`w-4 h-4 transition-transform ${showSeatSelector ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {showSeatSelector && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="fixed sm:absolute left-0 right-0 sm:left-auto sm:right-auto top-0 sm:top-auto 
+                                              bottom-0 sm:bottom-auto sm:mt-2 z-50 max-h-[90vh] sm:max-h-[80vh] 
+                                              sm:w-[calc(100vw-3rem)] md:w-[32rem] bg-white 
+                                              border border-gray-200 rounded-t-xl sm:rounded-lg shadow-xl 
+                                              overflow-auto"
+                                >
+                                    <div className="sticky top-0 bg-white z-10 p-4 border-b border-gray-100 flex justify-between items-center">
+                                        <h3 className="font-medium text-gray-700">選擇車廂與座位</h3>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowSeatSelector(false)}
+                                            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    <div className="p-4 space-y-4">
+                                        <div className="bg-gray-50 p-3 rounded-lg">
+                                            <p className="text-sm text-gray-600 mb-2">選擇車廂：</p>
+                                            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2 justify-center">
+                                                {availableCarriages.map(carNum => (
+                                                    <button
+                                                        key={carNum}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setTicketInfo(prev => ({ ...prev, carriage: carNum }))
+                                                        }}
+                                                        className={`aspect-square w-full rounded-lg flex items-center justify-center
+                                                                ${ticketInfo.carriage === carNum
+                                                                ? 'bg-tr-blue text-white'
+                                                                : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}
+                                                                transition-colors`}
+                                                    >
+                                                        {carNum}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {ticketInfo.carriage && (
+                                            <CarriageVisualizer
+                                                carriageNumber={ticketInfo.carriage}
+                                                seatNumber={ticketInfo.seat || '1'}
+                                                isVisible={showSeatSelector}
+                                                onSeatSelect={(seatNum) => {
+                                                    setTicketInfo(prev => ({ ...prev, seat: seatNum }))
+                                                    setShowSeatSelector(false)
+                                                }}
+                                                isMobileView={true}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className="sticky bottom-0 bg-white p-4 border-t border-gray-100 flex justify-end gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowSeatSelector(false)}
+                                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                                        >
+                                            取消
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowSeatSelector(false)}
+                                            className="px-4 py-2 rounded-lg bg-tr-blue text-white hover:bg-blue-600"
+                                            disabled={!ticketInfo.carriage || !ticketInfo.seat}
+                                        >
+                                            確認選擇
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {showSeatSelector && (
+                                <div
+                                    className="fixed inset-0 bg-black/40 z-40 sm:hidden"
+                                    onClick={() => setShowSeatSelector(false)}
+                                ></div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </motion.div>
@@ -355,7 +494,7 @@ export default function TicketScanForm() {
                 <button type="button"
                     onClick={() => setTicketInfo({
                         date: '', nbr: '', type: '', from: '', to: '',
-                        departure: '', arrival: '', seat: '', token: ''
+                        departure: '', arrival: '', carriage: '', seat: '', token: ''
                     })}
                     className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600
                              hover:bg-gray-50 transition-colors duration-200
