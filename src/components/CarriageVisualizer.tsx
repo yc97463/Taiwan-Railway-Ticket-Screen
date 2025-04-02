@@ -67,8 +67,9 @@ const CarriageHeader = ({
             <span className="text-tr-blue font-medium">{carriageNumber} 號車廂</span>
         </div>
         <span className="text-xs text-gray-500">
-            2+2座位配置 (共 {totalSeats} 座)
-            {isReversedCarriage ? ' - 逆向編號' : ''}
+            {/* {"2+2 座位配置 "} */}
+            共 {totalSeats} 座
+            {/* {isReversedCarriage ? ' - 逆向編號' : ''} */}
         </span>
     </div>
 );
