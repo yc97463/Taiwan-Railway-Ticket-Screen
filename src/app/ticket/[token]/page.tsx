@@ -494,7 +494,7 @@ export default function TicketPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full bg-tr-blue text-white py-3 px-4 rounded-lg text-center hover:bg-blue-700 transition-colors duration-200"
-                >  );
+                >
                   🚃 查看即時動態
                 </motion.a>
               </motion.div>
