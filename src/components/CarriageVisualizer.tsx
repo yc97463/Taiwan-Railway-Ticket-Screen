@@ -64,10 +64,10 @@ const CarriageHeader = ({
     <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
             <Train className="w-4 h-4 text-tr-blue" />
-            <span className="text-tr-blue font-medium">{carriageNumber}號車廂</span>
+            <span className="text-tr-blue font-medium">{carriageNumber} 號車廂</span>
         </div>
         <span className="text-xs text-gray-500">
-            2+2座位配置 (共{totalSeats}座)
+            2+2座位配置 (共 {totalSeats} 座)
             {isReversedCarriage ? ' - 逆向編號' : ''}
         </span>
     </div>
@@ -144,7 +144,7 @@ const SeatIndicator = ({ userSeatNum }: { userSeatNum: number }) => (
             <Armchair className="w-4 h-4 text-tr-blue" />
             <span className="text-sm text-gray-700">
                 您的座位：
-                <span className="font-medium text-tr-blue">{userSeatNum}號</span>
+                <span className="font-medium text-tr-blue">{userSeatNum} 號</span>
             </span>
         </div>
         {userSeatNum % 4 === 2 || userSeatNum % 4 === 1 ? (
