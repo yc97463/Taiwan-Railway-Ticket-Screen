@@ -63,7 +63,7 @@ const SeatRow = ({
 const CarriageHeader = ({
     carriageNumber,
     totalSeats,
-    isReversedCarriage
+    // isReversedCarriage
 }: {
     carriageNumber: string,
     totalSeats: number,

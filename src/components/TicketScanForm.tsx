@@ -142,6 +142,7 @@ export default function TicketScanForm() {
         setTicketInfo(prev => ({ ...prev, [name]: value }))
     }
 
+    /*
     const handleSeatSelection = (carriageNumber: string, seatNumber: string) => {
         setTicketInfo(prev => ({
             ...prev,
@@ -150,6 +151,7 @@ export default function TicketScanForm() {
         }))
         setShowSeatSelector(false)
     }
+    */
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -166,7 +168,7 @@ export default function TicketScanForm() {
         }
 
         // Create search params without the token
-        const { token, carriage, seat, ...otherParams } = ticketInfo
+        const { token, ...otherParams } = ticketInfo
         const searchParams = {
             ...otherParams,
             seat: formattedSeat
