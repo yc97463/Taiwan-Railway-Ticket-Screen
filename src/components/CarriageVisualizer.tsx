@@ -127,7 +127,7 @@ const CarriageIndicators = ({
                     <span>
                         {isReversedCarriage ?
                             // For carriages 9-12, flip the labels
-                            (carriageNum === 9 ? '駕駛室' : `${carriageNum - 1} 車`) :
+                            (carriageNum === 1 ? '駕駛室' : `${carriageNum - 1} 車`) :
                             // For carriages 1-8, normal display
                             (carriageNum === 12 ? '駕駛室' : `${carriageNum + 1} 車`)}
                     </span>
