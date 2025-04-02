@@ -358,7 +358,7 @@ export default function TicketPage() {
                     <span>{date}</span>
                   </div>
 
-                  <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center justify-between px-10 py-2">
                     <div className="text-center">
                       <p className="text-gray-500 text-sm">出發</p>
                       <p className="font-medium text-lg">{from}</p>
@@ -377,6 +377,7 @@ export default function TicketPage() {
                     <CarriageVisualizer
                       carriageNumber={getCarriageAndSeatNumber().carriageNumber}
                       seatNumber={getCarriageAndSeatNumber().seatNumber}
+                      isVisible={isCardExpanded} // Pass the expanded state to control scrolling
                     />
                   )}
                 </div>

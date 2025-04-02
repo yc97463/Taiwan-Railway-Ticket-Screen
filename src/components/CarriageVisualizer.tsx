@@ -1,17 +1,25 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { DoorClosed, Armchair, Train } from 'lucide-react'
 
 interface CarriageVisualizerProps {
     carriageNumber: string;
     seatNumber: string;
+    isVisible?: boolean; // New prop to track if component is visible (card expanded)
 }
 
-export default function CarriageVisualizer({ carriageNumber, seatNumber }: CarriageVisualizerProps) {
+export default function CarriageVisualizer({ carriageNumber, seatNumber, isVisible = false }: CarriageVisualizerProps) {
     // Parse the user's seat information
     const userSeatNum = parseInt(seatNumber, 10);
+
+    // Refs for scrolling
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const userSeatRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+    // Track if we've already scrolled
+    const hasScrolledRef = useRef(false);
 
     // Determine the number of seats based on the carriage number
     const getCarriageSeats = (carNum: string): number => {
@@ -63,6 +71,61 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
     // Calculate min-width based on the number of sections to ensure proper scrolling
     const containerMinWidth = Math.max(350, totalSections * 14 * 4);
 
+    // Effect to scroll to user's seat position when component becomes visible
+    useEffect(() => {
+        // Only scroll if the component is visible and we haven't scrolled yet
+        if (!isVisible || hasScrolledRef.current) return;
+
+        // Short delay to ensure rendering is complete after card expansion
+        const timer = setTimeout(() => {
+            // Find which type of seat the user has
+            let seatType: string | null = null;
+
+            if (userSeatNum % 4 === 2) seatType = 'topWindow';
+            else if (userSeatNum % 4 === 4 || userSeatNum % 4 === 0) seatType = 'topAisle';
+            else if (userSeatNum % 4 === 3) seatType = 'bottomAisle';
+            else if (userSeatNum % 4 === 1) seatType = 'bottomWindow';
+
+            // Get seat ref
+            const seatRef = userSeatRefs.current[seatType || ''] || null;
+
+            // If we have both container and seat refs, perform scroll
+            if (scrollContainerRef.current && seatRef) {
+                const container = scrollContainerRef.current;
+
+                // Calculate position (centering the seat)
+                const seatRect = seatRef.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                const scrollLeft = (
+                    seatRect.left -
+                    containerRect.left -
+                    (containerRect.width / 2) +
+                    (seatRect.width / 2) +
+                    container.scrollLeft
+                );
+
+                // Smooth scroll to position
+                container.scrollTo({
+                    left: scrollLeft,
+                    behavior: 'smooth'
+                });
+
+                // Mark that we've scrolled
+                hasScrolledRef.current = true;
+            }
+        }, 500); // Delay to ensure DOM is ready after expansion animation
+
+        return () => clearTimeout(timer);
+    }, [isVisible, userSeatNum, seats]);
+
+    // Reset the scroll flag if the component gets hidden (card collapsed)
+    useEffect(() => {
+        if (!isVisible) {
+            hasScrolledRef.current = false;
+        }
+    }, [isVisible]);
+
     return (
         <div className="mt-4 bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center justify-between mb-3">
@@ -95,7 +158,10 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
                 </div>
 
                 {/* Seat layout - scrollable container */}
-                <div className="overflow-x-auto pb-2">
+                <div
+                    ref={scrollContainerRef}
+                    className="overflow-x-auto pb-2 scroll-smooth"
+                >
                     <div className="flex flex-col" style={{ minWidth: `${containerMinWidth}px` }}>
                         {/* Top row (window seats 2,6,10,14...) */}
                         <div className="flex space-x-1 mb-1">
@@ -103,6 +169,8 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
                                 section.topWindow && (
                                     <div
                                         key={`top-window-${idx}`}
+                                        ref={section.topWindow === userSeatNum ?
+                                            (el) => { userSeatRefs.current.topWindow = el; } : undefined}
                                         className={`w-12 h-7 flex items-center justify-center rounded text-xs 
                                             ${section.topWindow === userSeatNum ? 'bg-tr-blue text-white' : 'bg-gray-100 text-gray-600'}`}
                                     >
@@ -118,6 +186,8 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
                                 section.topAisle && (
                                     <div
                                         key={`top-aisle-${idx}`}
+                                        ref={section.topAisle === userSeatNum ?
+                                            (el) => { userSeatRefs.current.topAisle = el; } : undefined}
                                         className={`w-12 h-7 flex items-center justify-center rounded text-xs 
                                             ${section.topAisle === userSeatNum ? 'bg-tr-blue text-white' : 'bg-gray-100 text-gray-600'}`}
                                     >
@@ -129,11 +199,12 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
 
                         {/* Central aisle */}
                         <div className="relative flex h-5 mb-2">
-                            <div className="absolute inset-0 bg-gray-50 rounded-full opacity-70"></div>
-                            <div className="z-10 w-full flex justify-center items-center">
-                                <DoorClosed className="w-4 h-4 text-gray-300 -rotate-90 absolute left-4" />
-                                <span className="text-xs text-gray-400">走 道</span>
-                                <DoorClosed className="w-4 h-4 text-gray-300 -rotate-90 absolute right-4" />
+                            <div className="absolute inset-0 bg-gray-50 rounded-full opacity-70">
+                                <div className="z-10 w-full flex justify-center items-center">
+                                    <DoorClosed className="w-4 h-4 text-gray-300 -rotate-90 absolute left-4" />
+                                    <span className="text-xs text-gray-400">走 道</span>
+                                    <DoorClosed className="w-4 h-4 text-gray-300 -rotate-90 absolute right-4" />
+                                </div>
                             </div>
                         </div>
 
@@ -143,6 +214,8 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
                                 section.bottomAisle && (
                                     <div
                                         key={`bottom-aisle-${idx}`}
+                                        ref={section.bottomAisle === userSeatNum ?
+                                            (el) => { userSeatRefs.current.bottomAisle = el; } : undefined}
                                         className={`w-12 h-7 flex items-center justify-center rounded text-xs 
                                             ${section.bottomAisle === userSeatNum ? 'bg-tr-blue text-white' : 'bg-gray-100 text-gray-600'}`}
                                     >
@@ -158,6 +231,8 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
                                 section.bottomWindow && (
                                     <div
                                         key={`bottom-window-${idx}`}
+                                        ref={section.bottomWindow === userSeatNum ?
+                                            (el) => { userSeatRefs.current.bottomWindow = el; } : undefined}
                                         className={`w-12 h-7 flex items-center justify-center rounded text-xs 
                                             ${section.bottomWindow === userSeatNum ? 'bg-tr-blue text-white' : 'bg-gray-100 text-gray-600'}`}
                                     >
@@ -188,7 +263,6 @@ export default function CarriageVisualizer({ carriageNumber, seatNumber }: Carri
                     <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">走道</span>
                 )}
             </div>
-
             {/* Legend */}
             <div className="mt-2 flex items-center justify-end gap-3">
                 <div className="flex items-center gap-1">
