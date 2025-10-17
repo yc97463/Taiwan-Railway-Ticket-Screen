@@ -3,7 +3,7 @@
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { Train } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 // Dynamically import the form component with no SSR
 const TicketScanForm = dynamic(() => import('@/components/TicketScanForm'), {

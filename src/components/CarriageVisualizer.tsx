@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { DoorClosed, Armchair, Train, ArrowLeft, ArrowRight } from 'lucide-react'
 
 // Types

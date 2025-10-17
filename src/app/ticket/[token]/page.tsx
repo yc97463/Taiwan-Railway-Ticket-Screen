@@ -17,7 +17,7 @@ import {
   Eye,
   QrCode
 } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import CarriageVisualizer from "@/components/CarriageVisualizer"
 
 interface TicketData {

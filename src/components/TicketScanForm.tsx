@@ -18,7 +18,7 @@ import {
     QrCode,
     ChevronDown
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import dynamic from 'next/dynamic'
 
 // Dynamically import CarriageVisualizer with no SSR
