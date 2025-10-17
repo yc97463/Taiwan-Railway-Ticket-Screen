@@ -195,7 +195,7 @@ export default function TicketScanForm() {
             <div className="space-y-4">
                 <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
                     <span className="w-1 h-6 bg-tr-blue rounded-full"></span>
-                    條碼掃描
+                    條碼掃描或貼上
                 </h2>
                 <div className="bg-gray-50 rounded-xl p-4">
                     {ticketInfo.token && !isScanning ? (
@@ -212,7 +212,7 @@ export default function TicketScanForm() {
                                 >
                                     <Check className="w-6 h-6 p-1 bg-tr-blue text-white rounded-full" />
                                 </motion.div>
-                                <div className="font-medium">已掃描條碼</div>
+                                <div className="font-medium">已載入條碼</div>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -225,11 +225,14 @@ export default function TicketScanForm() {
                                 </div>
                                 <button
                                     type="button"
-                                    onClick={startScanner}
-                                    className="text-sm px-3 py-1 bg-tr-blue text-white rounded hover:bg-blue-600 transition-colors flex items-center gap-1"
+                                    onClick={() => {
+                                        setTicketInfo(prev => ({ ...prev, token: '' }));
+                                        setIsEditing(false);
+                                    }}
+                                    className="text-sm px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors flex items-center gap-1"
                                 >
-                                    <ScanLine className="w-4 h-4" />
-                                    重新掃描
+                                    <X className="w-4 h-4" />
+                                    清除票根
                                 </button>
                             </div>
                         </motion.div>
@@ -237,16 +240,51 @@ export default function TicketScanForm() {
 
                     {!isScanning ? (
                         !ticketInfo.token && (
-                            <button
-                                type="button"
-                                onClick={startScanner}
-                                className="w-full py-4 px-6 rounded-xl border-2 border-dashed border-gray-300 
-                                        hover:border-tr-blue hover:bg-tr-blue/5 transition-colors duration-200
-                                        flex items-center justify-center gap-3 text-gray-600 hover:text-tr-blue"
-                            >
-                                <ScanLine className="w-6 h-6" />
-                                點擊開始掃描 QR Code
-                            </button>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={startScanner}
+                                        className="w-full py-3 px-4 rounded-xl border-2 border-dashed border-gray-300 
+                            hover:border-tr-blue hover:bg-tr-blue/5 transition-colors duration-200
+                            flex items-center justify-center gap-2 text-gray-600 hover:text-tr-blue"
+                                    >
+                                        <ScanLine className="w-5 h-5" />
+                                        掃描 QR Code
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={async () => {
+                                            try {
+                                                const text = await navigator.clipboard.readText();
+                                                if (text) {
+                                                    setTicketInfo(prev => ({ ...prev, token: text }));
+                                                    setIsEditing(true);
+                                                }
+                                            } catch (err) {
+                                                console.error('Failed to read clipboard contents: ', err);
+                                                alert('無法讀取剪貼簿，請手動貼上。');
+                                            }
+                                        }}
+                                        className="w-full py-3 px-4 rounded-xl border-2 border-dashed border-gray-300 
+                            hover:border-tr-orange hover:bg-tr-orange/5 transition-colors duration-200
+                            flex items-center justify-center gap-2 text-gray-600 hover:text-tr-orange"
+                                    >
+                                        <QrCode className="w-5 h-5" />
+                                        從剪貼簿貼上
+                                    </button>
+                                </div>
+                                <div className="relative flex items-center">
+                                    <input
+                                        type="text"
+                                        placeholder="或在此手動貼上條碼"
+                                        onChange={(e) => setTicketInfo(prev => ({ ...prev, token: e.target.value }))}
+                                        onBlur={() => { if (ticketInfo.token) setIsEditing(true); }}
+                                        className="w-full pl-4 pr-10 py-2 rounded-lg border border-gray-200 
+                               focus:ring-2 focus:ring-tr-blue focus:border-transparent"
+                                    />
+                                </div>
+                            </div>
                         )
                     ) : (
                         <div className="space-y-4">
@@ -255,7 +293,7 @@ export default function TicketScanForm() {
                                 type="button"
                                 onClick={stopScanner}
                                 className="w-full py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 
-                                        text-white transition-colors duration-200 flex items-center justify-center gap-2"
+                        text-white transition-colors duration-200 flex items-center justify-center gap-2"
                             >
                                 <X className="w-5 h-5" />
                                 停止掃描
@@ -287,7 +325,7 @@ export default function TicketScanForm() {
                         <input type="date" name="date" value={ticketInfo.date}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
@@ -297,7 +335,7 @@ export default function TicketScanForm() {
                         <select name="type" value={ticketInfo.type}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                         focus:ring-2 focus:ring-tr-blue focus:border-transparent">
+                         focus:ring-2 focus:ring-tr-blue focus:border-transparent">
                             <option value="">選擇車種</option>
                             <option value="自強3000">自強3000</option>
                             <option value="區間">區間車</option>
@@ -317,7 +355,7 @@ export default function TicketScanForm() {
                         <input type="text" name="nbr" value={ticketInfo.nbr}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
@@ -331,9 +369,9 @@ export default function TicketScanForm() {
                                         type="button"
                                         onClick={() => setShowSeatSelector(prev => !prev)}
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                                text-left flex items-center justify-between
-                                                focus:ring-2 focus:ring-tr-blue focus:border-transparent
-                                                hover:bg-gray-50 transition-colors"
+                            text-left flex items-center justify-between
+                            focus:ring-2 focus:ring-tr-blue focus:border-transparent
+                            hover:bg-gray-50 transition-colors"
                                     >
                                         <span>
                                             {ticketInfo.carriage && ticketInfo.seat
@@ -348,10 +386,10 @@ export default function TicketScanForm() {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             className="fixed sm:absolute left-0 right-0 sm:left-auto sm:right-auto top-0 sm:top-auto 
-                                                    bottom-0 sm:bottom-auto sm:mt-2 z-50 max-h-[dvh] sm:max-h-[80vh] 
-                                                    sm:w-[calc(100vw-3rem)] md:w-[32rem] bg-white 
-                                                    border border-gray-200 rounded-t-xl sm:rounded-lg shadow-xl 
-                                                    overflow-auto"
+                                bottom-0 sm:bottom-auto sm:mt-2 z-50 max-h-[dvh] sm:max-h-[80vh] 
+                                sm:w-[calc(100vw-3rem)] md:w-[32rem] bg-white 
+                                border border-gray-200 rounded-t-xl sm:rounded-lg shadow-xl 
+                                overflow-auto"
                                         >
                                             <div className="sticky top-0 bg-white z-10 p-4 border-b border-gray-100 flex justify-between items-center">
                                                 <h3 className="font-medium text-gray-700">選擇車廂與座位</h3>
@@ -376,10 +414,10 @@ export default function TicketScanForm() {
                                                                     setTicketInfo(prev => ({ ...prev, carriage: carNum }))
                                                                 }}
                                                                 className={`aspect-square w-full rounded-lg flex items-center justify-center
-                                                                    ${ticketInfo.carriage === carNum
+                                        ${ticketInfo.carriage === carNum
                                                                         ? 'bg-tr-blue text-white'
                                                                         : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}
-                                                                    transition-colors`}
+                                        transition-colors`}
                                                             >
                                                                 {carNum}
                                                             </button>
@@ -403,12 +441,12 @@ export default function TicketScanForm() {
 
                                             <div className="sticky bottom-0 bg-white p-4 border-t border-gray-100 flex justify-end gap-2">
                                                 {/* <button
-                                                    type="button"
-                                                    onClick={() => setShowSeatSelector(false)}
-                                                    className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
-                                                >
-                                                    取消
-                                                </button> */}
+                                type="button"
+                                onClick={() => setShowSeatSelector(false)}
+                                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                            >
+                                取消
+                            </button> */}
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowSeatSelector(false)}
@@ -456,7 +494,7 @@ export default function TicketScanForm() {
                                             onChange={handleInputChange}
                                             placeholder="車廂"
                                             className="px-4 py-2 rounded-lg border border-gray-200 
-                                                  focus:ring-2 focus:ring-tr-blue focus:border-transparent"
+                              focus:ring-2 focus:ring-tr-blue focus:border-transparent"
                                         />
                                         <input
                                             type="text"
@@ -465,7 +503,7 @@ export default function TicketScanForm() {
                                             onChange={handleInputChange}
                                             placeholder="座位號碼"
                                             className="px-4 py-2 rounded-lg border border-gray-200 
-                                                  focus:ring-2 focus:ring-tr-blue focus:border-transparent"
+                              focus:ring-2 focus:ring-tr-blue focus:border-transparent"
                                         />
                                     </div>
                                     {ticketInfo.type && (
@@ -500,7 +538,7 @@ export default function TicketScanForm() {
                         <input type="text" name="from" value={ticketInfo.from}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
@@ -510,7 +548,7 @@ export default function TicketScanForm() {
                         <input type="text" name="to" value={ticketInfo.to}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
@@ -520,7 +558,7 @@ export default function TicketScanForm() {
                         <input type="time" name="departure" value={ticketInfo.departure}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">
@@ -530,7 +568,7 @@ export default function TicketScanForm() {
                         <input type="time" name="arrival" value={ticketInfo.arrival}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 
-                                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
+                        focus:ring-2 focus:ring-tr-blue focus:border-transparent" />
                     </div>
                 </div>
             </motion.div>
@@ -544,19 +582,23 @@ export default function TicketScanForm() {
             >
                 <button type="submit"
                     className="flex-1 bg-tr-blue text-white py-3 px-6 rounded-xl
-                                 hover:bg-blue-600 transition-colors duration-200 font-medium
-                                 flex items-center justify-center gap-2">
+                     hover:bg-blue-600 transition-colors duration-200 font-medium
+                     flex items-center justify-center gap-2">
                     <Save className="w-5 h-5" />
                     {isEditing ? '更新車票資訊' : '建立車票'}
                 </button>
                 <button type="button"
-                    onClick={() => setTicketInfo({
-                        date: '', nbr: '', type: '', from: '', to: '',
-                        departure: '', arrival: '', carriage: '', seat: '', token: ''
-                    })}
+                    onClick={() => {
+                        setTicketInfo({
+                            date: '', nbr: '', type: '', from: '', to: '',
+                            departure: '', arrival: '', carriage: '', seat: '', token: ''
+                        });
+                        setIsEditing(false);
+                        // router.replace('/scan', undefined);
+                    }}
                     className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600
-                             hover:bg-gray-50 transition-colors duration-200
-                             flex items-center justify-center gap-2">
+                     hover:bg-gray-50 transition-colors duration-200
+                     flex items-center justify-center gap-2">
                     <RotateCcw className="w-5 h-5" />
                     清除表單
                 </button>
