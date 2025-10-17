@@ -594,7 +594,7 @@ export default function TicketScanForm() {
                             departure: '', arrival: '', carriage: '', seat: '', token: ''
                         });
                         setIsEditing(false);
-                        // router.replace('/scan', undefined);
+                        router.replace('/ticket', undefined);
                     }}
                     className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600
                      hover:bg-gray-50 transition-colors duration-200
