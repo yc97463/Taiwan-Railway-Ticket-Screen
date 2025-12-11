@@ -444,7 +444,7 @@ export default function TicketPage() {
                     className={qrCodeBlurred ? "filter blur-md transition-all duration-300" : "transition-all duration-300 brightness-110 contrast-125"}
                   >
                     <div className="w-[200px] h-[200px]">
-                      <div className="origin-top-left scale-50 w-[400px]">
+                      <div className="origin-top-left scale-50 w-[200px]">
                         <QRCodeGenerator text={token} width={400} />
                       </div>
                     </div>
