@@ -441,9 +441,13 @@ export default function TicketPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className={qrCodeBlurred ? "filter blur-md transition-all duration-300" : "transition-all duration-300"}
+                    className={qrCodeBlurred ? "filter blur-md transition-all duration-300" : "transition-all duration-300 brightness-110 contrast-125"}
                   >
-                    <QRCodeGenerator text={token} width={200} />
+                    <div className="w-[200px] h-[200px]">
+                      <div className="origin-top-left scale-50 w-[400px]">
+                        <QRCodeGenerator text={token} width={400} />
+                      </div>
+                    </div>
                   </motion.div>
 
                   {qrCodeBlurred && (
